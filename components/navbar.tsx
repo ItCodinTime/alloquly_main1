@@ -120,13 +120,36 @@ export function Navbar() {
             <button
               type="button"
               onClick={toggleTheme}
-              className={`rounded-full border px-2.5 py-2 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 ${
+              aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+              className={`rounded-full border p-2 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 ${
                 isDark
                   ? "border-white/20 text-white hover:bg-white/10"
-                  : "border-slate-200 text-slate-700 hover:bg-slate-100"
+                  : "border-slate-200 text-slate-900 hover:bg-slate-100"
               }`}
             >
-              {isDark ? "Light" : "Dark"}
+              <span className="relative flex h-6 w-6 items-center justify-center">
+                <motion.span
+                  key="sun-icon"
+                  animate={{ opacity: isDark ? 0 : 1, rotate: isDark ? 45 : 0, scale: isDark ? 0.5 : 1 }}
+                  transition={{ duration: 0.3, ease: [0.42, 0, 0.58, 1] }}
+                  className="absolute"
+                >
+                  <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8">
+                    <circle cx="12" cy="12" r="4" />
+                    <path d="M12 2v2M12 20v2M4.93 4.93l1.414 1.414M17.657 17.657l1.414 1.414M2 12h2M20 12h2M4.93 19.07l1.414-1.414M17.657 6.343l1.414-1.414" />
+                  </svg>
+                </motion.span>
+                <motion.span
+                  key="moon-icon"
+                  animate={{ opacity: isDark ? 1 : 0, rotate: isDark ? 0 : -45, scale: isDark ? 1 : 0.5 }}
+                  transition={{ duration: 0.3, ease: [0.42, 0, 0.58, 1] }}
+                  className="absolute"
+                >
+                  <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+                  </svg>
+                </motion.span>
+              </span>
             </button>
           </div>
         </div>
