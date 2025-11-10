@@ -1,17 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 import { copy } from "@/lib/copy";
 import { useTheme } from "@/components/theme/ThemeProvider";
 
-const fadeUp = {
+const fadeUp: Variants = {
   hidden: { opacity: 0, y: 24 },
-  visible: (delay = 0) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.7, delay, ease: "easeOut" },
-  }),
+  visible: { opacity: 1, y: 0 },
 };
 
 export function Hero() {
@@ -49,6 +45,7 @@ export function Hero() {
           initial="hidden"
           animate="visible"
           variants={fadeUp}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
         >
           <p
             className={`inline-flex items-center gap-2 rounded-full border px-4 py-1 text-xs uppercase tracking-[0.3em] transition-colors ${chipClass}`}
@@ -59,15 +56,23 @@ export function Hero() {
             <motion.h1
               className={`text-4xl font-medium leading-tight sm:text-5xl ${isDark ? "text-white" : "text-slate-900"}`}
               variants={fadeUp}
-              custom={0.1}
+              transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
             >
               {copy.brand.tagline}
             </motion.h1>
-            <motion.p className={`text-lg ${textMuted}`} variants={fadeUp} custom={0.2}>
+            <motion.p
+              className={`text-lg ${textMuted}`}
+              variants={fadeUp}
+              transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            >
               {copy.coreValueShort}
             </motion.p>
           </div>
-          <motion.div className="flex flex-col gap-4 sm:flex-row" variants={fadeUp} custom={0.3}>
+          <motion.div
+            className="flex flex-col gap-4 sm:flex-row"
+            variants={fadeUp}
+            transition={{ duration: 0.7, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          >
             <Link
               href="/contact"
               aria-label={copy.ctas.primary}
@@ -83,7 +88,11 @@ export function Hero() {
               {copy.ctas.secondary}
             </a>
           </motion.div>
-          <motion.p className={`text-sm ${isDark ? "text-slate-400" : "text-slate-500"}`} variants={fadeUp} custom={0.4}>
+          <motion.p
+            className={`text-sm ${isDark ? "text-slate-400" : "text-slate-500"}`}
+            variants={fadeUp}
+            transition={{ duration: 0.7, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          >
             {copy.ctas.trustNote}
           </motion.p>
         </motion.div>
