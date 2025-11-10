@@ -42,10 +42,10 @@ export function Footer() {
     <footer className={`relative ${background}`}>
       <div
         aria-hidden
-        className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+        className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden"
       >
         <span
-          className={`select-none font-extrabold uppercase tracking-[0.35em] text-[7rem] leading-none md:text-[12rem] xl:text-[16rem] ${watermarkColor}`}
+          className={`select-none font-extrabold uppercase tracking-[0.3em] text-[clamp(2.5rem,18vw,14rem)] leading-[0.8] whitespace-nowrap ${watermarkColor}`}
         >
           ALLOQLY
         </span>

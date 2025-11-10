@@ -89,7 +89,7 @@ export function Navbar() {
           </nav>
           <div className="flex items-center gap-3 text-sm font-semibold">
             <Link
-              href="/login"
+              href="/teacher/login"
               className={`transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 ${
                 isDark ? "text-slate-200 hover:text-white" : "text-slate-600 hover:text-slate-900"
               }`}
@@ -97,7 +97,7 @@ export function Navbar() {
               Log in
             </Link>
             <Link
-              href="/signup"
+              href="/teacher/signup"
               className={`rounded-full border px-4 py-2 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 ${
                 isDark
                   ? "border-white/20 text-white hover:bg-white/10"
@@ -106,17 +106,6 @@ export function Navbar() {
             >
               Sign up
             </Link>
-            <a
-              href="#pilot"
-              className={`rounded-full px-5 py-2 text-sm font-semibold shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-400 ${
-                isDark
-                  ? "bg-white/90 text-slate-900 hover:bg-white focus-visible:ring-offset-slate-900"
-                  : "bg-slate-900 text-white hover:bg-black focus-visible:ring-offset-white"
-              }`}
-              aria-label={copy.ctas.primary}
-            >
-              {copy.ctas.primary}
-            </a>
             <button
               type="button"
               onClick={toggleTheme}
@@ -209,7 +198,7 @@ export function Navbar() {
               </nav>
               <div className="mt-4 flex flex-col gap-3 text-sm font-semibold">
                 <Link
-                  href="/login"
+                  href="/teacher/login"
                   className={`rounded-full border px-4 py-2 text-center ${
                     isDark ? "border-white/10 text-white" : "border-slate-200 text-slate-800"
                   }`}
@@ -218,7 +207,7 @@ export function Navbar() {
                   Log in
                 </Link>
                 <Link
-                  href="/signup"
+                  href="/teacher/signup"
                   className={`rounded-full border px-4 py-2 text-center ${
                     isDark ? "border-white/20 text-white" : "border-slate-200 text-slate-900"
                   }`}
@@ -226,15 +215,6 @@ export function Navbar() {
                 >
                   Sign up
                 </Link>
-                <a
-                  href="#pilot"
-                  className={`rounded-full px-4 py-2 text-center ${
-                    isDark ? "bg-white text-slate-900" : "bg-slate-900 text-white"
-                  }`}
-                  onClick={() => setMenuOpen(false)}
-                >
-                  {copy.ctas.primary}
-                </a>
                 <button
                   type="button"
                   onClick={() => {
