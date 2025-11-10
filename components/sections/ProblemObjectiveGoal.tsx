@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { copy } from "@/lib/copy";
 import { useTheme } from "@/components/theme/ThemeProvider";
+import { fadeInUp, revealFromBottom, staggerChildren } from "@/lib/animations";
 
 const pogItems = [
   { title: "Problem", body: copy.pog.problem },
@@ -22,12 +23,12 @@ export function ProblemObjectiveGoal() {
   return (
     <motion.section
       className={`relative isolate overflow-hidden px-4 py-20 transition-colors duration-300 ${sectionBg}`}
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.7, ease: "easeOut" }}
+      initial="hidden"
+      whileInView="visible"
+      variants={revealFromBottom}
       viewport={{ once: true, amount: 0.3 }}
     >
-      <div className="mx-auto max-w-6xl space-y-12">
+      <motion.div className="mx-auto max-w-6xl space-y-12" variants={staggerChildren}>
         <div className={`space-y-4 text-center lg:text-left ${isDark ? "text-slate-200" : "text-slate-700"}`}>
           <p className={`text-sm font-semibold uppercase tracking-[0.3em] ${isDark ? "text-indigo-300" : "text-indigo-500"}`}>
             Why Alloqly
@@ -42,10 +43,8 @@ export function ProblemObjectiveGoal() {
             <motion.article
               key={item.title}
               className={`rounded-3xl border p-6 backdrop-blur ${cardBg}`}
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              viewport={{ once: true, amount: 0.3 }}
+              variants={fadeInUp}
+              transition={{ duration: 0.6, delay: index * 0.1, ease: [0.42, 0, 0.58, 1] }}
             >
               <p className={`text-xs font-semibold uppercase tracking-[0.4em] ${isDark ? "text-indigo-200" : "text-indigo-500"}`}>
                 {item.title}
@@ -54,7 +53,7 @@ export function ProblemObjectiveGoal() {
             </motion.article>
           ))}
         </div>
-      </div>
+      </motion.div>
     </motion.section>
   );
 }

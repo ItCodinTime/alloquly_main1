@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { copy } from "@/lib/copy";
 import { useTheme } from "@/components/theme/ThemeProvider";
+import { fadeInUp, revealFromBottom, staggerChildren } from "@/lib/animations";
 
 export function FAQ() {
   const { theme } = useTheme();
@@ -17,12 +18,12 @@ export function FAQ() {
     <motion.section
       id="faq"
       className={`px-4 py-20 transition-colors duration-300 ${sectionBg}`}
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.7, ease: "easeOut" }}
+      initial="hidden"
+      whileInView="visible"
+      variants={revealFromBottom}
       viewport={{ once: true, amount: 0.2 }}
     >
-      <div className="mx-auto max-w-5xl">
+      <motion.div className="mx-auto max-w-5xl" variants={staggerChildren}>
         <div className="mb-10 text-center">
           <p className={`text-sm font-semibold uppercase tracking-[0.3em] ${isDark ? "text-indigo-300" : "text-indigo-500"}`}>
             FAQ
@@ -36,10 +37,8 @@ export function FAQ() {
             <motion.details
               key={item.q}
               className={`group rounded-2xl border p-5 transition-colors ${cardBg}`}
-              initial={{ opacity: 0, y: 15 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: index * 0.05 }}
-              viewport={{ once: true, amount: 0.3 }}
+              variants={fadeInUp}
+              transition={{ duration: 0.4, delay: index * 0.05, ease: [0.42, 0, 0.58, 1] }}
             >
               <summary
                 className={`flex cursor-pointer items-center justify-between text-left text-lg font-semibold ${
@@ -53,7 +52,7 @@ export function FAQ() {
             </motion.details>
           ))}
         </div>
-      </div>
+      </motion.div>
     </motion.section>
   );
 }

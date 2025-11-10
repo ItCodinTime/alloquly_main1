@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { copy } from "@/lib/copy";
 import { useTheme } from "@/components/theme/ThemeProvider";
+import { fadeInUp, revealFromBottom, staggerChildren } from "@/lib/animations";
 
 function StepIcon({ index, isDark }: { index: number; isDark: boolean }) {
   return (
@@ -18,11 +19,6 @@ function StepIcon({ index, isDark }: { index: number; isDark: boolean }) {
   );
 }
 
-const columnVariants = {
-  hidden: { opacity: 0, y: 40 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: "easeOut" } },
-};
-
 export function ProcessCapabilities() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
@@ -33,16 +29,15 @@ export function ProcessCapabilities() {
     : "border-slate-200 bg-white text-slate-700 shadow-xl shadow-slate-200/70";
 
   return (
-    <section className={`relative isolate overflow-hidden px-4 py-20 transition-colors duration-300 ${sectionBg}`}>
+    <motion.section
+      className={`relative isolate overflow-hidden px-4 py-20 transition-colors duration-300 ${sectionBg}`}
+      initial="hidden"
+      whileInView="visible"
+      variants={revealFromBottom}
+      viewport={{ once: true, amount: 0.2 }}
+    >
       <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-2">
-        <motion.div
-          id="how-it-works"
-          className="space-y-8"
-          initial="hidden"
-          whileInView="visible"
-          variants={columnVariants}
-          viewport={{ once: true, amount: 0.2 }}
-        >
+        <motion.div id="how-it-works" className="space-y-8" variants={staggerChildren}>
           <p className={`text-sm font-semibold uppercase tracking-[0.3em] ${isDark ? "text-indigo-300" : "text-indigo-500"}`}>
             Process
           </p>
@@ -57,10 +52,8 @@ export function ProcessCapabilities() {
               <motion.article
                 key={step.title}
                 className={`flex gap-4 rounded-3xl border p-5 backdrop-blur ${cardBg}`}
-                initial={{ opacity: 0, x: index % 2 === 0 ? -30 : 30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.05 }}
-                viewport={{ once: true, amount: 0.4 }}
+                variants={fadeInUp}
+                transition={{ duration: 0.6, delay: index * 0.05, ease: [0.42, 0, 0.58, 1] }}
               >
                 <StepIcon index={index} isDark={isDark} />
                 <div>
@@ -72,14 +65,7 @@ export function ProcessCapabilities() {
           </div>
         </motion.div>
 
-        <motion.div
-          id="features"
-          className="space-y-8"
-          initial="hidden"
-          whileInView="visible"
-          variants={columnVariants}
-          viewport={{ once: true, amount: 0.2 }}
-        >
+        <motion.div id="features" className="space-y-8" variants={staggerChildren}>
           <p className={`text-sm font-semibold uppercase tracking-[0.3em] ${isDark ? "text-indigo-300" : "text-indigo-500"}`}>
             Capabilities
           </p>
@@ -96,10 +82,8 @@ export function ProcessCapabilities() {
               <motion.div
                 key={feature}
                 className={`flex items-center gap-3 rounded-2xl border p-4 backdrop-blur ${cardBg}`}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: index * 0.04 }}
-                viewport={{ once: true, amount: 0.2 }}
+                variants={fadeInUp}
+                transition={{ duration: 0.5, delay: index * 0.04, ease: [0.42, 0, 0.58, 1] }}
               >
                 <span
                   className={`h-2 w-2 rounded-full ${isDark ? "bg-indigo-300" : "bg-indigo-500"}`}
@@ -111,6 +95,6 @@ export function ProcessCapabilities() {
           </div>
         </motion.div>
       </div>
-    </section>
+    </motion.section>
   );
 }

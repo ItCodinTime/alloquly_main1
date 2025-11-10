@@ -1,14 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { motion, type Variants } from "framer-motion";
+import { motion } from "framer-motion";
 import { copy } from "@/lib/copy";
 import { useTheme } from "@/components/theme/ThemeProvider";
-
-const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 24 },
-  visible: { opacity: 1, y: 0 },
-};
+import { fadeInUp } from "@/lib/animations";
 
 export function Hero() {
   const { theme } = useTheme();
@@ -44,7 +40,7 @@ export function Hero() {
           className="space-y-8 text-center lg:text-left"
           initial="hidden"
           animate="visible"
-          variants={fadeUp}
+          variants={fadeInUp}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
         >
           <p
@@ -55,14 +51,14 @@ export function Hero() {
           <div className="space-y-6">
             <motion.h1
               className={`text-4xl font-medium leading-tight sm:text-5xl ${isDark ? "text-white" : "text-slate-900"}`}
-              variants={fadeUp}
+              variants={fadeInUp}
               transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
             >
               {copy.brand.tagline}
             </motion.h1>
             <motion.p
               className={`text-lg ${textMuted}`}
-              variants={fadeUp}
+              variants={fadeInUp}
               transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
             >
               {copy.coreValueShort}
@@ -70,7 +66,7 @@ export function Hero() {
           </div>
           <motion.div
             className="flex flex-col gap-4 sm:flex-row"
-            variants={fadeUp}
+            variants={fadeInUp}
             transition={{ duration: 0.7, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
           >
             <Link
@@ -90,7 +86,7 @@ export function Hero() {
           </motion.div>
           <motion.p
             className={`text-sm ${isDark ? "text-slate-400" : "text-slate-500"}`}
-            variants={fadeUp}
+            variants={fadeInUp}
             transition={{ duration: 0.7, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
           >
             {copy.ctas.trustNote}
