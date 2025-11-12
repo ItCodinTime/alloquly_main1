@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { ThemeProvider, useTheme } from "@/components/theme/ThemeProvider";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
@@ -18,6 +19,7 @@ export default function TeacherLoginPage() {
 function TeacherLoginContent() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [selectedRole, setSelectedRole] = useState<"teacher" | "student">("teacher");
@@ -70,6 +72,7 @@ function TeacherLoginContent() {
     event.preventDefault();
     console.log({ email, password });
     // TODO: Integrate Supabase or backend auth here.
+    router.push("/dashboard");
   };
 
   return (
@@ -104,7 +107,7 @@ function TeacherLoginContent() {
                 </button>
               ))}
             </div>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} noValidate className="space-y-4">
               <div>
                 <label htmlFor="teacher-email" className={`block text-sm font-medium ${labelClass}`}>
                   Email
