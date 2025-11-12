@@ -14,7 +14,11 @@ const anchorLinks = [
   { href: "#faq", label: "FAQ" },
 ];
 
-export function Navbar() {
+type NavbarProps = {
+  defaultName?: string;
+};
+
+export function Navbar({ defaultName }: NavbarProps = {}) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
@@ -69,6 +73,9 @@ export function Navbar() {
               {copy.brand.name}
             </p>
             <p className={`text-xs ${isDark ? "text-slate-300" : "text-slate-500"}`}>{copy.brand.tagline}</p>
+            {defaultName && (
+              <p className={`text-[11px] ${isDark ? "text-indigo-200" : "text-indigo-600"}`}>Hi, {defaultName}</p>
+            )}
           </div>
         </Link>
 
