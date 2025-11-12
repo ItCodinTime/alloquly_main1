@@ -39,7 +39,8 @@ export default function PlansPage() {
                 <span className="text-indigo-500">{plan.date}</span>
               </div>
               <h2 className="mt-3 text-xl font-semibold">{plan.title}</h2>
-              <p className="mt-2 text-sm text-slate-500 dark:text-slate-300">{plan.details}</p>
+              <p className="mt-1 text-xs uppercase tracking-[0.2em] text-indigo-400">{plan.className}</p>
+              <p className="mt-2 text-sm text-slate-500 dark:text-slate-300">{plan.focus}</p>
               <div className="mt-4 flex gap-3 text-sm">
                 <button className="rounded-full border border-slate-200 px-4 py-2 dark:border-white/20">
                   Preview
