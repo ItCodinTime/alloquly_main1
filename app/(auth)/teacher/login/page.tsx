@@ -70,9 +70,10 @@ function TeacherLoginContent() {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log({ email, password });
+    console.log({ email, password, selectedRole });
     // TODO: Integrate Supabase or backend auth here.
-    router.push("/dashboard");
+    const destination = selectedRole === "teacher" ? "/dashboard" : "/student/dashboard";
+    router.push(destination);
   };
 
   return (

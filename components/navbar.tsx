@@ -65,7 +65,7 @@ export function Navbar({ defaultName }: NavbarProps = {}) {
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
         <Link href="/" className="flex items-center gap-2" aria-label="Alloqly home">
-          <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-500 text-base font-semibold text-white shadow-lg shadow-indigo-500/30">
+          <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-linear-to-br from-indigo-500 to-purple-500 text-base font-semibold text-white shadow-lg shadow-indigo-500/30">
             A
           </span>
           <div>

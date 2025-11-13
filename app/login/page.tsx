@@ -74,7 +74,8 @@ function LoginContent() {
     event.preventDefault();
     console.log({ role, email, password });
     // TODO: Integrate Supabase or backend auth provider
-    router.push("/dashboard");
+    const destination = role === "teacher" ? "/dashboard" : "/student/dashboard";
+    router.push(destination);
   };
 
   return (

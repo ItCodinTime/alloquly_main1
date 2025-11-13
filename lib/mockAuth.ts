@@ -12,6 +12,13 @@ const mockTeacher: MockUser = {
   role: "teacher",
 };
 
-export function getMockUser(): MockUser {
-  return mockTeacher;
+const mockStudent: MockUser = {
+  id: "student-431",
+  name: "Jordan Kumar",
+  email: "jordan.kumar@example.com",
+  role: "student",
+};
+
+export function getMockUser(role: MockUser["role"] = "teacher"): MockUser {
+  return role === "student" ? mockStudent : mockTeacher;
 }
