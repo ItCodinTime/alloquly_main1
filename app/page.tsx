@@ -64,12 +64,18 @@ export default function Home() {
                 black-and-white interface.
               </p>
               <div className="flex flex-wrap gap-4 text-sm">
-                <button className="rounded-full border border-white px-6 py-3 font-semibold text-black transition hover:-translate-y-0.5 hover:bg-white">
-                  Launch live demo
-                </button>
-                <button className="rounded-full border border-white/40 px-6 py-3 font-semibold text-white transition hover:-translate-y-0.5 hover:border-white hover:bg-white/10">
-                  Share with my district
-                </button>
+                <a
+                  href="/auth/login"
+                  className="rounded-full border border-white bg-white px-6 py-3 font-semibold text-black transition hover:-translate-y-0.5 hover:shadow-[0_20px_60px_rgba(255,255,255,0.15)]"
+                >
+                  Get started free
+                </a>
+                <a
+                  href="/assignments"
+                  className="rounded-full border border-white/40 px-6 py-3 font-semibold text-white transition hover:-translate-y-0.5 hover:border-white hover:bg-white/10"
+                >
+                  View demo
+                </a>
               </div>
               <div className="grid gap-4 text-sm text-zinc-400 sm:grid-cols-3">
                 {heroStats.map((stat) => (
@@ -136,12 +142,20 @@ export default function Home() {
             ))}
           </div>
           <div className="mt-8 flex flex-wrap gap-4 text-sm">
-            <button className="rounded-full border border-white px-6 py-3 font-semibold text-black transition hover:-translate-y-0.5 hover:bg-white">
-              Book a 20 min build
-            </button>
-            <button className="rounded-full border border-white/40 px-6 py-3 font-semibold text-white transition hover:-translate-y-0.5 hover:border-white hover:bg-white/10">
-              Deploy to Vercel
-            </button>
+            <a
+              href="/auth/login"
+              className="rounded-full border border-white bg-white px-6 py-3 font-semibold text-black transition hover:-translate-y-0.5 hover:shadow-[0_20px_60px_rgba(255,255,255,0.15)]"
+            >
+              Start building
+            </a>
+            <a
+              href="https://github.com/yourusername/alloquly"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-full border border-white/40 px-6 py-3 font-semibold text-white transition hover:-translate-y-0.5 hover:border-white hover:bg-white/10"
+            >
+              View on GitHub
+            </a>
           </div>
         </section>
       </div>

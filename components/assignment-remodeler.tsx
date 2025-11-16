@@ -42,8 +42,10 @@ export default function AssignmentRemodeler() {
   const [profile, setProfile] = useState(neuroProfiles[0].value);
   const [attachmentName, setAttachmentName] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<RemodelResult | null>(null);
+  const [saveNotice, setSaveNotice] = useState<string | null>(null);
 
   const profileCopy = useMemo(
     () => neuroProfiles.find((p) => p.value === profile)?.microcopy ?? "",
@@ -81,6 +83,34 @@ export default function AssignmentRemodeler() {
       setError((err as Error).message);
     } finally {
       setIsLoading(false);
+    }
+  }
+
+  async function saveAssignment() {
+    if (!result) return;
+    setIsSaving(true);
+    setSaveNotice(null);
+    try {
+      const response = await fetch("/api/assignments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: assignment.slice(0, 60) || "Untitled assignment",
+          profile,
+          summary: result.summary,
+          content: assignment,
+        }),
+      });
+      if (!response.ok) {
+        const payload = await response.json();
+        throw new Error(payload.error ?? "Unable to save to Supabase.");
+      }
+      const payload = await response.json();
+      setSaveNotice(`Saved as ${payload.assignment?.title ?? "assignment"}`);
+    } catch (err) {
+      setSaveNotice((err as Error).message);
+    } finally {
+      setIsSaving(false);
     }
   }
 
@@ -173,6 +203,14 @@ export default function AssignmentRemodeler() {
           >
             {isLoading ? "Remodeling…" : "Generate neuroinclusive version"}
           </button>
+          <button
+            type="button"
+            className="w-full rounded-full border border-white/40 px-5 py-3 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:border-white hover:bg-white/10 disabled:cursor-not-allowed disabled:border-white/20 disabled:text-white/50 disabled:opacity-60"
+            onClick={saveAssignment}
+            disabled={!result || isSaving}
+          >
+            {isSaving ? "Saving…" : "Save to Supabase"}
+          </button>
           {error ? (
             <p className="text-xs text-red-300">{error}</p>
           ) : (
@@ -181,6 +219,7 @@ export default function AssignmentRemodeler() {
               project.
             </p>
           )}
+          {saveNotice && <p className="text-xs text-emerald-300">{saveNotice}</p>}
         </div>
       </div>
 

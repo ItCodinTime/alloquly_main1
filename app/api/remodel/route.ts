@@ -55,7 +55,7 @@ export async function POST(request: Request) {
 
     const payload = buildOpenAIRequest(truncated, profile);
 
-    const aiResponse = await fetch("https://api.openai.com/v1/responses", {
+    const aiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -77,9 +77,8 @@ export async function POST(request: Request) {
     }
 
     const data = (await aiResponse.json()) as OpenAIResponse;
-    const content =
-      data.output?.[0]?.content?.[0]?.text?.value ??
-      data.output?.[0]?.content?.[0]?.content?.[0]?.text;
+    const content = data.choices?.[0]?.message?.content;
+    
     if (!content) {
       return NextResponse.json(
         {
@@ -118,60 +117,28 @@ export async function POST(request: Request) {
 
 function buildOpenAIRequest(assignment: string, profile: string) {
   return {
-    model: "gpt-4.1-mini",
-    input: [
+    model: "gpt-4o-mini",
+    messages: [
       {
         role: "system",
-        content: [
-          {
-            type: "text",
-            text:
-              "You are Alloquly, an instructional designer who rewrites teacher assignments for neurodiverse learners. Return JSON that leaders can read out loud.",
-          },
-        ],
+        content:
+          "You are Alloquly, an instructional designer who rewrites teacher assignments for neurodiverse learners. Return JSON that educators can read out loud.",
       },
       {
         role: "user",
-        content: [
-          {
-            type: "text",
-            text: `Assignment:\n${assignment}\n\nLearner profile: ${profile}\nRespond with JSON that contains keys summary (string), accommodations (array of strings), missions (array of strings). Keep each mission under 30 words.`,
-          },
-        ],
+        content: `Assignment:\n${assignment}\n\nLearner profile: ${profile}\n\nRespond with JSON containing:\n- summary: A brief description of how the assignment was adapted\n- accommodations: Array of 3-5 specific accommodations applied\n- missions: Array of 3-4 chunked tasks, each under 30 words\n\nMake it practical, clear, and actionable for ${profile} learners.`,
       },
     ],
-    response_format: {
-      type: "json_schema",
-      json_schema: {
-        name: "assignment_remodel",
-        schema: {
-          type: "object",
-          properties: {
-            summary: { type: "string" },
-            accommodations: {
-              type: "array",
-              items: { type: "string" },
-            },
-            missions: {
-              type: "array",
-              items: { type: "string" },
-            },
-          },
-          required: ["summary", "accommodations", "missions"],
-          additionalProperties: false,
-        },
-      },
-    },
+    response_format: { type: "json_object" },
     temperature: 0.7,
   };
 }
 
 type OpenAIResponse = {
-  output?: Array<{
-    content?: Array<{
-      text?: { value: string };
-      content?: Array<{ text?: string }>;
-    }>;
+  choices?: Array<{
+    message?: {
+      content?: string;
+    };
   }>;
 };
 

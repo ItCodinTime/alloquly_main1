@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type Student = {
   id: string;
@@ -59,11 +59,27 @@ export default function ClassroomManager() {
   const [email, setEmail] = useState("");
   const [profile, setProfile] = useState(profileOptions[0]);
   const [formError, setFormError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const inviteLink = useMemo(() => {
     const token = createId().slice(0, 6);
     return `https://classroom.alloquly.app/join?room=${token}`;
   }, [students.length]);
+
+  useEffect(() => {
+    async function loadStudents() {
+      try {
+        const response = await fetch("/api/students", { cache: "no-store" });
+        const payload = (await response.json()) as { students?: Student[] };
+        if (payload.students?.length) {
+          setStudents(payload.students as Student[]);
+        }
+      } catch (error) {
+        console.error("Unable to load students", error);
+      }
+    }
+    loadStudents();
+  }, []);
 
   function handleAddStudent(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -90,9 +106,21 @@ export default function ClassroomManager() {
     setName("");
     setEmail("");
     setFormError(null);
+
+    try {
+      await fetch("/api/students", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newStudent),
+      });
+    } catch (error) {
+      console.error("Student save failed", error);
+    }
   }
 
-  function toggleStatus(id: string) {
+  async function toggleStatus(id: string) {
+    let nextStatus: Student["status"] | null = null;
+
     setStudents((prev) =>
       prev.map((student) => {
         if (student.id !== id) return student;
@@ -104,9 +132,25 @@ export default function ClassroomManager() {
         ];
         const next =
           order[(order.indexOf(student.status) + 1) % order.length] ?? "On track";
+        nextStatus = next;
         return { ...student, status: next };
       }),
     );
+
+    if (!nextStatus) return;
+
+    setLoading(true);
+    try {
+      await fetch("/api/students", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, status: nextStatus }),
+      });
+    } catch (error) {
+      console.error("Student status update failed", error);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -169,6 +213,7 @@ export default function ClassroomManager() {
             type="button"
             className="flex w-full items-center justify-between rounded-2xl border border-white/10 bg-white/[0.02] px-4 py-3 text-left transition hover:border-white/40"
             onClick={() => toggleStatus(student.id)}
+            disabled={loading}
           >
             <div>
               <p className="text-sm text-white">{student.name}</p>
