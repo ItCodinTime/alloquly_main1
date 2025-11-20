@@ -76,6 +76,7 @@ type MotionComponentProps = React.HTMLAttributes<HTMLElement> & {
   whileHover?: Record<string, unknown> | string;
   whileTap?: Record<string, unknown> | string;
   whileInView?: Record<string, unknown> | string;
+  viewport?: Record<string, unknown>;
   variants?: Variants;
 };
 
