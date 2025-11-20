@@ -69,12 +69,12 @@ const resolveStyle = (style?: MotionStyle) => {
 type MotionComponentProps = React.HTMLAttributes<HTMLElement> & {
   type?: string;
   style?: MotionStyle;
-  animate?: Record<string, unknown>;
-  initial?: Record<string, unknown>;
-  exit?: Record<string, unknown>;
-  transition?: Record<string, unknown>;
-  whileHover?: Record<string, unknown>;
-  whileTap?: Record<string, unknown>;
+  animate?: Record<string, unknown> | string;
+  initial?: Record<string, unknown> | string;
+  exit?: Record<string, unknown> | string;
+  transition?: Record<string, unknown> | string;
+  whileHover?: Record<string, unknown> | string;
+  whileTap?: Record<string, unknown> | string;
   variants?: Variants;
 };
 
