@@ -40,10 +40,10 @@ const defaultStudents: Student[] = [
 ];
 
 const statusTheme: Record<Student["status"], string> = {
-  "On track": "text-emerald-300",
-  "Needs nudge": "text-yellow-300",
-  "Waiting on upload": "text-orange-300",
-  "Deep focus": "text-sky-300",
+  "On track": "text-emerald-700",
+  "Needs nudge": "text-amber-700",
+  "Waiting on upload": "text-orange-700",
+  "Deep focus": "text-sky-700",
 };
 
 const profileOptions = [
@@ -60,6 +60,8 @@ export default function ClassroomManager() {
   const [profile, setProfile] = useState(profileOptions[0]);
   const [formError, setFormError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [joinCode, setJoinCode] = useState<string | null>(null);
+  const [codeStatus, setCodeStatus] = useState<string | null>(null);
 
   const inviteLink = useMemo(() => {
     const token = createId().slice(0, 6);
@@ -153,43 +155,58 @@ export default function ClassroomManager() {
     }
   }
 
+  async function generateJoinCode() {
+    setCodeStatus("Generating code…");
+    try {
+      const response = await fetch("/api/join-class", { method: "GET" });
+      const payload = (await response.json()) as { code?: string };
+      if (!response.ok || !payload.code) {
+        throw new Error("Unable to generate code.");
+      }
+      setJoinCode(payload.code);
+      setCodeStatus("Share this code with students to join.");
+    } catch (error) {
+      setCodeStatus((error as Error).message);
+    }
+  }
+
   return (
-    <section className="rounded-3xl border border-white/10 bg-black/40 p-6 shadow-[0_30px_120px_rgba(0,0,0,0.55)] backdrop-blur">
-      <div className="flex flex-wrap items-center justify-between gap-3 text-xs uppercase tracking-[0.3em] text-zinc-500">
+    <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="flex flex-wrap items-center justify-between gap-3 text-xs uppercase tracking-[0.3em] text-slate-500">
         <span>Classroom roster</span>
         <span>Secure Gmail invite</span>
       </div>
 
-      <form className="mt-6 grid gap-4 rounded-2xl border border-white/10 bg-white/[0.02] p-4 sm:grid-cols-2" onSubmit={handleAddStudent}>
+      <form className="mt-6 grid gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:grid-cols-2" onSubmit={handleAddStudent}>
         <div className="space-y-2">
-          <label className="text-xs text-zinc-500">Student name</label>
+          <label className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">Student name</label>
           <input
             value={name}
             onChange={(event) => setName(event.target.value)}
-            className="w-full rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-sm text-white outline-none transition focus:border-white/50"
+            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100"
             placeholder="E.g., Priya Gomez"
             autoComplete="off"
           />
         </div>
         <div className="space-y-2">
-          <label className="text-xs text-zinc-500">Gmail</label>
+          <label className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">Gmail</label>
           <input
             value={email}
             onChange={(event) => setEmail(event.target.value)}
-            className="w-full rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-sm text-white outline-none transition focus:border-white/50"
+            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100"
             placeholder="student@gmail.com"
             autoComplete="off"
           />
         </div>
         <div className="space-y-2">
-          <label className="text-xs text-zinc-500">Support plan</label>
+          <label className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">Support plan</label>
           <select
             value={profile}
             onChange={(event) => setProfile(event.target.value)}
-            className="w-full rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-sm text-white outline-none transition focus:border-white/50"
+            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100"
           >
             {profileOptions.map((option) => (
-              <option key={option} value={option} className="bg-black text-white">
+              <option key={option} value={option} className="bg-white text-slate-900">
                 {option}
               </option>
             ))}
@@ -198,11 +215,11 @@ export default function ClassroomManager() {
         <div className="flex flex-col justify-end">
           <button
             type="submit"
-            className="rounded-full border border-white px-4 py-2 text-sm font-semibold text-black transition hover:-translate-y-0.5 hover:bg-white"
+            className="rounded-full border border-indigo-600 bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-500"
           >
             Add student
           </button>
-          {formError && <p className="mt-2 text-xs text-red-300">{formError}</p>}
+          {formError && <p className="mt-2 text-xs text-red-600">{formError}</p>}
         </div>
       </form>
 
@@ -211,16 +228,16 @@ export default function ClassroomManager() {
           <button
             key={student.id}
             type="button"
-            className="flex w-full items-center justify-between rounded-2xl border border-white/10 bg-white/[0.02] px-4 py-3 text-left transition hover:border-white/40"
+            className="flex w-full items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3 text-left transition hover:border-indigo-200"
             onClick={() => toggleStatus(student.id)}
             disabled={loading}
           >
             <div>
-              <p className="text-sm text-white">{student.name}</p>
-              <p className="text-xs text-zinc-500">{student.email}</p>
+              <p className="text-sm font-medium text-slate-900">{student.name}</p>
+              <p className="text-xs text-slate-500">{student.email}</p>
             </div>
             <div className="text-right text-xs">
-              <p className="text-zinc-400">{student.profile}</p>
+              <p className="text-slate-500">{student.profile}</p>
               <p className={`${statusTheme[student.status]} font-semibold`}>
                 {student.status}
               </p>
@@ -229,13 +246,40 @@ export default function ClassroomManager() {
         ))}
       </div>
 
-      <div className="mt-6 rounded-2xl border border-dashed border-white/20 p-4 text-xs text-zinc-400">
-        <p className="uppercase tracking-[0.3em] text-zinc-500">Share link</p>
-        <p className="mt-2 break-all text-white/80">{inviteLink}</p>
-        <p className="mt-2 text-[11px]">
+      <div className="mt-6 rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-4 text-xs text-slate-600">
+        <p className="uppercase tracking-[0.3em] text-slate-500">Share link</p>
+        <p className="mt-2 break-all font-semibold text-slate-900">{inviteLink}</p>
+        <p className="mt-2 text-[11px] text-slate-500">
           Link rotates when roster changes. Students verify via Gmail; no password
           reuse.
         </p>
+      </div>
+      <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-800">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Class code</p>
+            <p className="text-sm text-slate-600">
+              Generate a Google Classroom-style code for quick onboarding.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={generateJoinCode}
+            className="rounded-full border border-indigo-600 bg-indigo-600 px-4 py-2 text-xs font-semibold text-white transition hover:bg-indigo-500"
+          >
+            Generate code
+          </button>
+        </div>
+        {joinCode && (
+          <div className="mt-3 flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
+            <div>
+              <p className="text-xs uppercase tracking-[0.25em] text-slate-500">Student code</p>
+              <p className="text-lg font-semibold">{joinCode}</p>
+            </div>
+            <span className="text-xs text-slate-500">Expires in ~30 mins</span>
+          </div>
+        )}
+        {codeStatus && <p className="mt-2 text-xs text-slate-500">{codeStatus}</p>}
       </div>
     </section>
   );

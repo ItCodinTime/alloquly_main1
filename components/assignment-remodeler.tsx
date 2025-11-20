@@ -115,36 +115,36 @@ export default function AssignmentRemodeler() {
   }
 
   return (
-    <section className="rounded-3xl border border-white/10 bg-black/50 p-6 shadow-[0_30px_120px_rgba(0,0,0,0.55)] backdrop-blur">
-      <div className="flex flex-wrap items-center justify-between gap-3 text-xs uppercase tracking-[0.3em] text-zinc-500">
+    <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="flex flex-wrap items-center justify-between gap-3 text-xs uppercase tracking-[0.3em] text-slate-500">
         <span>Remodel assignment</span>
-        <span className="rounded-full border border-white/10 px-3 py-1 text-[10px] tracking-[0.4em] text-zinc-400">
+        <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[10px] tracking-[0.4em] text-slate-600">
           Secure edge call
         </span>
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_0.9fr]">
         <div className="space-y-4">
-          <label className="text-sm text-zinc-400">
+          <label className="text-sm font-medium text-slate-700">
             Paste assignment or instructions
           </label>
           <textarea
             value={assignment}
             onChange={(event) => setAssignment(event.target.value)}
             maxLength={MAX_CHAR_COUNT}
-            className="min-h-[180px] w-full rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-sm text-white outline-none transition focus:border-white/40 focus:bg-white/[0.06]"
+            className="min-h-[180px] w-full rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-900 shadow-inner focus:border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-100"
             placeholder="Paste PDF text, doc excerpt, or prompt here."
           />
-          <div className="flex flex-wrap gap-3 text-xs text-zinc-500">
+          <div className="flex flex-wrap gap-3 text-xs text-slate-500">
             <span>
               {assignment.length} / {MAX_CHAR_COUNT} chars
             </span>
             {attachmentName ? (
-              <span className="rounded-full border border-white/10 px-3 py-1 text-white/70">
+              <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-slate-700">
                 Attached: {attachmentName}
               </span>
             ) : (
-              <label className="cursor-pointer rounded-full border border-dashed border-white/15 px-3 py-1 text-white/80 transition hover:border-white/40">
+              <label className="cursor-pointer rounded-full border border-dashed border-slate-300 bg-slate-50 px-3 py-1 text-slate-700 transition hover:border-indigo-200 hover:text-indigo-700">
                 Attach file
                 <input
                   type="file"
@@ -161,7 +161,7 @@ export default function AssignmentRemodeler() {
         </div>
 
         <div className="space-y-4">
-          <label className="text-sm text-zinc-400">
+          <label className="text-sm font-medium text-slate-700">
             Pick learner profile
           </label>
           <div className="grid grid-cols-2 gap-3">
@@ -173,15 +173,15 @@ export default function AssignmentRemodeler() {
                   type="button"
                   className={`rounded-2xl border px-4 py-3 text-left transition ${
                     isActive
-                      ? "border-white bg-white text-black"
-                      : "border-white/10 bg-white/[0.02] text-white/80 hover:border-white/40"
+                      ? "border-indigo-200 bg-indigo-50 text-indigo-800 shadow-sm"
+                      : "border-slate-200 bg-slate-50 text-slate-800 hover:border-indigo-200"
                   }`}
                   onClick={() => setProfile(option.value)}
                 >
                   <p className="text-sm font-semibold">{option.label}</p>
                   <p
                     className={`mt-2 text-xs ${
-                      isActive ? "text-black/70" : "text-zinc-400"
+                      isActive ? "text-indigo-700" : "text-slate-600"
                     }`}
                   >
                     {option.microcopy}
@@ -191,13 +191,13 @@ export default function AssignmentRemodeler() {
             })}
           </div>
 
-          <div className="rounded-2xl border border-dashed border-white/15 p-4 text-sm text-zinc-400">
+          <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
             {profileCopy}
           </div>
 
           <button
             type="button"
-            className="w-full rounded-full border border-white px-5 py-3 text-sm font-semibold text-black transition hover:-translate-y-0.5 hover:bg-white disabled:cursor-not-allowed disabled:border-white/30 disabled:text-white/50 disabled:opacity-60"
+            className="w-full rounded-full border border-indigo-600 bg-indigo-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:border-indigo-200 disabled:bg-indigo-200 disabled:text-white/70"
             onClick={remodelAssignment}
             disabled={isLoading || assignment.trim().length < 40}
           >
@@ -205,36 +205,36 @@ export default function AssignmentRemodeler() {
           </button>
           <button
             type="button"
-            className="w-full rounded-full border border-white/40 px-5 py-3 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:border-white hover:bg-white/10 disabled:cursor-not-allowed disabled:border-white/20 disabled:text-white/50 disabled:opacity-60"
+            className="w-full rounded-full border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-800 transition hover:border-indigo-200 hover:text-indigo-700 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400"
             onClick={saveAssignment}
             disabled={!result || isSaving}
           >
             {isSaving ? "Saving…" : "Save to Supabase"}
           </button>
           {error ? (
-            <p className="text-xs text-red-300">{error}</p>
+            <p className="text-xs text-red-600">{error}</p>
           ) : (
-            <p className="text-xs text-zinc-500">
+            <p className="text-xs text-slate-500">
               Outputs stream through `/api/remodel` and never leave your Vercel
               project.
             </p>
           )}
-          {saveNotice && <p className="text-xs text-emerald-300">{saveNotice}</p>}
+          {saveNotice && <p className="text-xs text-emerald-700">{saveNotice}</p>}
         </div>
       </div>
 
-      <div className="mt-6 rounded-3xl border border-white/10 bg-white/[0.02] p-5">
-        <div className="flex flex-wrap items-center justify-between gap-3 text-xs uppercase tracking-[0.3em] text-zinc-500">
+      <div className="mt-6 rounded-3xl border border-slate-200 bg-slate-50 p-5">
+        <div className="flex flex-wrap items-center justify-between gap-3 text-xs uppercase tracking-[0.3em] text-slate-500">
           <span>AI suggestion</span>
           <span>{result ? result.source : "Mock preview"}</span>
         </div>
 
-        <div className="mt-4 space-y-4 text-sm text-zinc-200">
-          <p className="text-lg text-white">
+        <div className="mt-4 space-y-4 text-sm text-slate-700">
+          <p className="text-lg font-semibold text-slate-900">
             {result ? result.summary : "Select a profile and generate a rewrite to preview AI scaffolds."}
           </p>
           <div>
-            <p className="text-xs uppercase tracking-[0.4em] text-zinc-500">
+            <p className="text-xs uppercase tracking-[0.4em] text-slate-500">
               Accommodations
             </p>
             <ul className="mt-2 space-y-2">
@@ -247,9 +247,9 @@ export default function AssignmentRemodeler() {
               ).map((item) => (
                 <li
                   key={item}
-                  className="flex items-center gap-3 rounded-2xl border border-white/10 bg-black/40 px-4 py-2 text-sm"
+                  className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-800"
                 >
-                  <span className="h-2 w-2 rounded-full bg-white" />
+                  <span className="h-2 w-2 rounded-full bg-indigo-500" />
                   {item}
                 </li>
               ))}
@@ -257,7 +257,7 @@ export default function AssignmentRemodeler() {
           </div>
 
           <div>
-            <p className="text-xs uppercase tracking-[0.4em] text-zinc-500">
+            <p className="text-xs uppercase tracking-[0.4em] text-slate-500">
               Missions
             </p>
             <div className="mt-2 grid gap-2 sm:grid-cols-3">
@@ -270,7 +270,7 @@ export default function AssignmentRemodeler() {
               ).map((mission) => (
                 <div
                   key={mission}
-                  className="rounded-2xl border border-white/10 bg-white/[0.03] p-3 text-xs text-zinc-300"
+                  className="rounded-2xl border border-slate-200 bg-white p-3 text-xs text-slate-700"
                 >
                   {mission}
                 </div>

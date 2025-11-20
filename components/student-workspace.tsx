@@ -50,14 +50,14 @@ export default function StudentWorkspace() {
   const completed = tasks.filter((task) => task.done).length;
 
   return (
-    <section className="rounded-3xl border border-white/10 bg-black/40 p-6 shadow-[0_30px_120px_rgba(0,0,0,0.55)] backdrop-blur">
-      <div className="flex flex-wrap items-center justify-between gap-3 text-xs uppercase tracking-[0.3em] text-zinc-500">
+    <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="flex flex-wrap items-center justify-between gap-3 text-xs uppercase tracking-[0.3em] text-slate-500">
         <span>Student workspace</span>
         <span>Focus view</span>
       </div>
 
-      <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.02] p-4">
-        <div className="flex flex-wrap items-center justify-between text-sm text-zinc-300">
+      <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+        <div className="flex flex-wrap items-center justify-between text-sm text-slate-700">
           <p>Focus timer lock</p>
           <p>{focusMinutes} min bursts</p>
         </div>
@@ -67,9 +67,9 @@ export default function StudentWorkspace() {
           max={30}
           value={focusMinutes}
           onChange={(event) => setFocusMinutes(Number(event.target.value))}
-          className="mt-4 w-full accent-white"
+          className="mt-4 w-full accent-indigo-600"
         />
-        <p className="mt-2 text-xs text-zinc-500">
+        <p className="mt-2 text-xs text-slate-500">
           Timer auto-pauses when co-regulation flag triggers.
         </p>
       </div>
@@ -82,23 +82,23 @@ export default function StudentWorkspace() {
             onClick={() => toggleTask(task.id)}
             className={`flex w-full items-start gap-4 rounded-2xl border px-4 py-3 text-left transition ${
               task.done
-                ? "border-emerald-300/40 bg-emerald-300/10"
-                : "border-white/10 bg-white/[0.02] hover:border-white/40"
+                ? "border-emerald-200 bg-emerald-50"
+                : "border-slate-200 bg-white hover:border-indigo-200"
             }`}
           >
             <span
               className={`mt-1 h-5 w-5 rounded-full border text-xs ${
                 task.done
-                  ? "border-emerald-200 bg-emerald-300 text-black"
-                  : "border-white/30 text-white/70"
+                  ? "border-emerald-200 bg-emerald-200 text-emerald-900"
+                  : "border-slate-300 text-slate-500"
               } flex items-center justify-center`}
             >
               {task.done ? "✓" : indexToStep(task)}
             </span>
             <div>
-              <p className="text-sm text-white">{task.title}</p>
-              <p className="text-xs text-zinc-400">{task.detail}</p>
-              <p className="mt-2 text-[11px] text-zinc-500">
+              <p className="text-sm font-medium text-slate-900">{task.title}</p>
+              <p className="text-xs text-slate-600">{task.detail}</p>
+              <p className="mt-2 text-[11px] text-slate-500">
                 {task.duration} min · Voice + text supports
               </p>
             </div>
@@ -107,8 +107,8 @@ export default function StudentWorkspace() {
       </div>
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2">
-        <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 text-sm text-zinc-300">
-          <p className="text-xs uppercase tracking-[0.3em] text-zinc-500">
+        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
+          <p className="text-xs uppercase tracking-[0.3em] text-slate-500">
             Calm scene
           </p>
           <div className="mt-3 flex gap-3">
@@ -119,29 +119,29 @@ export default function StudentWorkspace() {
                 onClick={() => setCalmScene(scene)}
                 className={`rounded-xl border px-3 py-2 text-xs capitalize transition ${
                   calmScene === scene
-                    ? "border-white bg-white text-black"
-                    : "border-white/10 text-white/80 hover:border-white/40"
+                    ? "border-indigo-200 bg-white text-indigo-800 shadow-sm"
+                    : "border-slate-200 text-slate-700 hover:border-indigo-200"
                 }`}
               >
                 {scene}
               </button>
             ))}
           </div>
-          <p className="mt-2 text-xs text-zinc-500">
+          <p className="mt-2 text-xs text-slate-500">
             Scene plays when overwhelm sentiment > 0.7.
           </p>
         </div>
-        <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 text-sm text-zinc-300">
-          <p className="text-xs uppercase tracking-[0.3em] text-zinc-500">
+        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
+          <p className="text-xs uppercase tracking-[0.3em] text-slate-500">
             Progress
           </p>
-          <div className="mt-4 h-3 rounded-full bg-white/10">
+          <div className="mt-4 h-3 rounded-full bg-slate-200">
             <div
-              className="h-full rounded-full bg-white"
+              className="h-full rounded-full bg-indigo-500"
               style={{ width: `${(completed / tasks.length) * 100}%` }}
             />
           </div>
-          <p className="mt-2 text-xs text-zinc-500">
+          <p className="mt-2 text-xs text-slate-500">
             {completed} / {tasks.length} missions finished
           </p>
         </div>

@@ -24,8 +24,8 @@ export default function EnvStatus() {
   if (hasKey === null) return null;
 
   const tone = hasKey
-    ? "border-emerald-400/40 bg-emerald-300/10 text-emerald-100"
-    : "border-yellow-300/40 bg-yellow-300/10 text-yellow-100";
+    ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+    : "border-amber-200 bg-amber-50 text-amber-800";
 
   return (
     <div className={`rounded-2xl border px-4 py-3 text-sm ${tone}`}>

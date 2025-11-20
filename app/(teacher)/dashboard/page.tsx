@@ -6,12 +6,12 @@ import { motion } from "framer-motion";
 import { CheckCircle, ClipboardList, Loader2, Users } from "lucide-react";
 
 import { ThemeProvider, useTheme } from "@/components/theme/ThemeProvider";
-import { FloatingDecor } from "@/components/ambient/FloatingDecor";
 import { TeacherNavbar } from "@/components/dashboard/TeacherNavbar";
 import { TeacherFooter } from "@/components/dashboard/TeacherFooter";
 import { fetchTeacherDashboard } from "@/lib/services/teacherDashboard";
 import type { TeacherDashboardData } from "@/lib/mocks/teacherDashboard";
 import { getMockUser } from "@/lib/mockAuth";
+import GradeAssistant from "@/components/grade-assistant";
 
 export default function TeacherDashboardPage() {
   return (
@@ -30,8 +30,8 @@ function TeacherDashboardContent() {
   const mutedText = isDark ? "text-slate-400" : "text-slate-500";
 
   const backgroundClass = isDark
-    ? "bg-[linear-gradient(180deg,_rgba(6,12,31,1)_0%,_rgba(9,17,36,1)_35%,_rgba(18,29,60,1)_65%,_rgba(36,47,94,1)_100%)] text-slate-50"
-    : "bg-gradient-to-br from-indigo-50 via-white to-slate-50 text-slate-900";
+    ? "bg-slate-950 text-slate-50"
+    : "bg-slate-50 text-slate-900";
 
   useEffect(() => {
     const teacherId = getMockUser().id;
@@ -61,20 +61,6 @@ function TeacherDashboardContent() {
     <div className={`flex min-h-screen flex-col transition-colors duration-300 ${backgroundClass}`}>
       <TeacherNavbar teacherName={data?.profile.name ?? "Teacher"} />
       <main className="relative flex-1 overflow-hidden">
-        <FloatingDecor />
-        <motion.div
-          aria-hidden
-          className="pointer-events-none absolute -left-24 top-20 h-96 w-96 rounded-full bg-gradient-to-r from-indigo-500/40 to-emerald-400/30 blur-3xl"
-          animate={{ opacity: [0.15, 0.3, 0.15], scale: [1, 1.1, 1] }}
-          transition={{ duration: 8, repeat: Infinity }}
-        />
-        <motion.div
-          aria-hidden
-          className="pointer-events-none absolute -right-32 bottom-10 h-[28rem] w-[28rem] rounded-full bg-gradient-to-r from-purple-500/30 to-indigo-400/20 blur-[160px]"
-          animate={{ opacity: [0.2, 0.35, 0.2], scale: [1.05, 0.95, 1.05] }}
-          transition={{ duration: 10, repeat: Infinity }}
-        />
-
         <div className="relative z-10 px-6 py-10 md:py-16">
           {loading ? (
             <div className="flex min-h-[60vh] flex-col items-center justify-center gap-3 text-sm text-slate-500">
@@ -207,6 +193,8 @@ function TeacherDashboardContent() {
                   </button>
                 </section>
               </div>
+
+              <GradeAssistant />
 
               {/* Support tickets */}
               <section className={`rounded-3xl border p-6 shadow-lg shadow-indigo-500/5 ${isDark ? "border-white/10 bg-white/5" : "border-slate-200 bg-white"}`}>

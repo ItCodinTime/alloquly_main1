@@ -39,6 +39,34 @@ CREATE TABLE IF NOT EXISTS submissions (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Classes table
+CREATE TABLE IF NOT EXISTS classes (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  name TEXT NOT NULL DEFAULT 'Homeroom',
+  description TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Short-lived classroom codes for student onboarding
+CREATE TABLE IF NOT EXISTS classroom_codes (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  class_id UUID REFERENCES classes(id) ON DELETE CASCADE,
+  code TEXT NOT NULL,
+  expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE (code)
+);
+
+-- Class-student membership
+CREATE TABLE IF NOT EXISTS class_students (
+  class_id UUID REFERENCES classes(id) ON DELETE CASCADE,
+  student_id UUID REFERENCES students(id) ON DELETE CASCADE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  PRIMARY KEY (class_id, student_id)
+);
+
 -- Insights table (for tracking student progress metrics)
 CREATE TABLE IF NOT EXISTS insights (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -55,6 +83,10 @@ CREATE INDEX IF NOT EXISTS idx_assignments_user_id ON assignments(user_id);
 CREATE INDEX IF NOT EXISTS idx_assignments_created_at ON assignments(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_students_user_id ON students(user_id);
 CREATE INDEX IF NOT EXISTS idx_students_email ON students(email);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_students_user_email ON students(user_id, email);
+CREATE INDEX IF NOT EXISTS idx_classes_user_id ON classes(user_id);
+CREATE INDEX IF NOT EXISTS idx_classroom_codes_code ON classroom_codes(code);
+CREATE INDEX IF NOT EXISTS idx_classroom_codes_expires_at ON classroom_codes(expires_at DESC);
 CREATE INDEX IF NOT EXISTS idx_submissions_assignment_id ON submissions(assignment_id);
 CREATE INDEX IF NOT EXISTS idx_submissions_student_id ON submissions(student_id);
 CREATE INDEX IF NOT EXISTS idx_insights_student_id ON insights(student_id);
@@ -64,6 +96,9 @@ ALTER TABLE assignments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE students ENABLE ROW LEVEL SECURITY;
 ALTER TABLE submissions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE insights ENABLE ROW LEVEL SECURITY;
+ALTER TABLE classes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE classroom_codes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE class_students ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies for assignments
 CREATE POLICY "Users can view their own assignments"
@@ -98,6 +133,53 @@ CREATE POLICY "Users can update their own students"
 CREATE POLICY "Users can delete their own students"
   ON students FOR DELETE
   USING (auth.uid() = user_id);
+
+-- RLS Policies for classes
+CREATE POLICY "Users can view their own classes"
+  ON classes FOR SELECT
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can create their own classes"
+  ON classes FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update their own classes"
+  ON classes FOR UPDATE
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete their own classes"
+  ON classes FOR DELETE
+  USING (auth.uid() = user_id);
+
+-- RLS Policies for classroom codes (teacher-scoped)
+CREATE POLICY "Teachers view their class codes"
+  ON classroom_codes FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM classes WHERE classes.id = classroom_codes.class_id AND classes.user_id = auth.uid()
+    )
+  );
+
+CREATE POLICY "Teachers create their class codes"
+  ON classroom_codes FOR INSERT
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM classes WHERE classes.id = classroom_codes.class_id AND classes.user_id = auth.uid()
+    )
+  );
+
+CREATE POLICY "Teachers delete their class codes"
+  ON classroom_codes FOR DELETE
+  USING (
+    EXISTS (
+      SELECT 1 FROM classes WHERE classes.id = classroom_codes.class_id AND classes.user_id = auth.uid()
+    )
+  );
+
+-- Note: class_students is written via service role during student join; keep policies permissive if needed.
+CREATE POLICY "Members view class_students"
+  ON class_students FOR SELECT
+  USING (true);
 
 -- RLS Policies for submissions
 CREATE POLICY "Users can view submissions for their students"

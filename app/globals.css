@@ -1,11 +1,11 @@
 @import "tailwindcss";
 
 :root {
-  --background: #050505;
-  --foreground: #f8f8f8;
-  --muted: #8f8f94;
-  --border: rgba(255, 255, 255, 0.08);
-  --glow: rgba(255, 255, 255, 0.35);
+  --background: #f5f7fb;
+  --foreground: #0f172a;
+  --muted: #475569;
+  --border: #e2e8f0;
+  --glow: rgba(59, 130, 246, 0.15);
 }
 
 @theme inline {
@@ -22,17 +22,7 @@
 }
 
 body {
-  background: radial-gradient(
-      circle at 20% 20%,
-      rgba(255, 255, 255, 0.085),
-      transparent 45%
-    ),
-    radial-gradient(
-      circle at 80% 0%,
-      rgba(255, 255, 255, 0.06),
-      transparent 50%
-    ),
-    var(--background);
+  background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), "SF Pro Display", -apple-system,
     BlinkMacSystemFont, sans-serif;
@@ -42,43 +32,40 @@ body {
 }
 
 ::selection {
-  background: rgba(255, 255, 255, 0.2);
+  background: #dbeafe;
+  color: #0f172a;
 }
 
-/* iOS-style smooth scrolling */
 html {
   scroll-behavior: smooth;
 }
 
-/* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.02);
+  background: #e5e7eb;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: #cbd5e1;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.15);
+  background: #94a3b8;
 }
 
-/* Frosted glass effect */
 .frosted-card {
-  border: 1px solid var(--border);
-  background: rgba(12, 12, 12, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(15, 23, 42, 0.6);
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
 }
 
-/* Halo effect for premium feel */
 .halo {
   position: relative;
 }
@@ -89,7 +76,7 @@ html {
   inset: -1px;
   border-radius: inherit;
   padding: 1px;
-  background: linear-gradient(120deg, rgba(255, 255, 255, 0.3), transparent 60%);
+  background: linear-gradient(120deg, rgba(255, 255, 255, 0.65), transparent 60%);
   -webkit-mask:
     linear-gradient(#000, #000) content-box,
     linear-gradient(#000, #000);
@@ -98,7 +85,6 @@ html {
   pointer-events: none;
 }
 
-/* Smooth transitions for interactive elements */
 button,
 a,
 input,
@@ -107,22 +93,19 @@ select {
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* iOS-style button press effect */
 button:active:not(:disabled) {
   transform: scale(0.98);
 }
 
-/* Focus styles for accessibility */
 button:focus-visible,
 a:focus-visible,
 input:focus-visible,
 textarea:focus-visible,
 select:focus-visible {
-  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline: 2px solid #2563eb;
   outline-offset: 2px;
 }
 
-/* Skeleton loading animation */
 @keyframes shimmer {
   0% {
     background-position: -1000px 0;
@@ -136,14 +119,13 @@ select:focus-visible {
   animation: shimmer 2s infinite linear;
   background: linear-gradient(
     to right,
-    rgba(255, 255, 255, 0.02) 0%,
-    rgba(255, 255, 255, 0.08) 50%,
-    rgba(255, 255, 255, 0.02) 100%
+    rgba(148, 163, 184, 0.06) 0%,
+    rgba(148, 163, 184, 0.18) 50%,
+    rgba(148, 163, 184, 0.06) 100%
   );
   background-size: 1000px 100%;
 }
 
-/* Fade in animation */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -159,7 +141,6 @@ select:focus-visible {
   animation: fadeIn 0.4s ease-out;
 }
 
-/* Pulse animation for loading states */
 @keyframes pulse {
   0%, 100% {
     opacity: 1;
@@ -173,21 +154,19 @@ select:focus-visible {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-/* Gradient text effect */
 .gradient-text {
-  background: linear-gradient(135deg, #ffffff 0%, #a0a0a0 100%);
+  background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-/* Glass morphism card variant */
 .glass-card {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.3),
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.26),
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }

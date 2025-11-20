@@ -16,21 +16,17 @@ export const metadata = {
 
 export default function AssignmentsPage() {
   return (
-    <main className="relative isolate min-h-screen overflow-hidden pb-12 text-white">
-      <div className="pointer-events-none absolute inset-0 opacity-50">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,.05),_transparent_55%)] blur-3xl" />
-      </div>
-
-      <div className="relative z-10 mx-auto flex max-w-6xl flex-col gap-12">
-        <section className="rounded-[2.5rem] border border-white/10 bg-white/5 p-8 shadow-[0_35px_120px_rgba(0,0,0,0.55)] sm:p-12">
-          <p className="text-xs uppercase tracking-[0.3em] text-zinc-500">
+    <main className="min-h-screen bg-slate-50 pb-12 text-slate-900">
+      <div className="mx-auto flex max-w-6xl flex-col gap-10 px-4 pt-6 sm:px-6">
+        <section className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm sm:p-12">
+          <p className="text-xs uppercase tracking-[0.3em] text-slate-500">
             Assignment studio
           </p>
-          <h1 className="mt-4 text-4xl text-white sm:text-5xl">
+          <h1 className="mt-4 text-4xl font-semibold text-slate-900 sm:text-5xl">
             Drop any rubric or doc. Alloquly rebuilds it into micro-missions per
             learner with explainable AI steps.
           </h1>
-          <p className="mt-4 max-w-3xl text-lg text-zinc-400">
+          <p className="mt-4 max-w-3xl text-lg text-slate-600">
             Teachers keep control: change tone, rigor, modalities, and supports.
             AI summaries highlight what changed so you can communicate with
             families, co-teachers, and administrators without guesswork.
@@ -39,7 +35,7 @@ export default function AssignmentsPage() {
             {safeguards.map((item) => (
               <div
                 key={item}
-                className="rounded-3xl border border-white/10 bg-black/40 p-4 text-sm text-zinc-300"
+                className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700"
               >
                 {item}
               </div>

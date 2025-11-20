@@ -18,6 +18,10 @@ export default function SiteHeader() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
+  const isGlassy =
+    pathname === "/" ||
+    pathname?.startsWith("/auth") ||
+    pathname === "/login";
 
   useEffect(() => {
     const supabase = createClient();
@@ -43,12 +47,20 @@ export default function SiteHeader() {
     router.refresh();
   }
 
+  const headerClass = isGlassy
+    ? "sticky top-0 z-20 mx-auto flex w-full max-w-6xl items-center justify-between gap-4 rounded-full border border-white/10 bg-slate-900/70 px-4 py-3 text-white shadow-lg backdrop-blur"
+    : "sticky top-0 z-20 mx-auto flex w-full max-w-6xl items-center justify-between gap-4 rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-800 shadow-sm";
+
   return (
-    <header className="sticky top-0 z-20 mx-auto flex w-full max-w-6xl items-center justify-between gap-4 rounded-full border border-white/10 bg-black/70 px-4 py-3 backdrop-blur">
-      <div className="text-xs uppercase tracking-[0.4em] text-zinc-400">
+    <header className={headerClass}>
+      <div
+        className={`text-xs uppercase tracking-[0.4em] ${
+          isGlassy ? "text-zinc-300" : "text-slate-600"
+        }`}
+      >
         Alloquly
       </div>
-      <nav className="flex flex-wrap items-center gap-2 text-sm text-zinc-400">
+      <nav className="flex flex-wrap items-center gap-2 text-sm text-slate-500">
         {links.map((link) => {
           const isActive =
             link.href === "/"
@@ -60,8 +72,12 @@ export default function SiteHeader() {
               href={link.href}
               className={`rounded-full border px-4 py-2 transition ${
                 isActive
-                  ? "border-white bg-white text-black"
-                  : "border-transparent text-zinc-300 hover:border-white/30 hover:text-white"
+                  ? isGlassy
+                    ? "border-white bg-white text-black"
+                    : "border-indigo-200 bg-indigo-50 text-indigo-700"
+                  : isGlassy
+                    ? "border-transparent text-zinc-200 hover:border-white/30 hover:text-white"
+                    : "border-transparent text-slate-600 hover:border-slate-200 hover:text-slate-900"
               }`}
             >
               {link.label}
@@ -72,14 +88,22 @@ export default function SiteHeader() {
           <button
             onClick={handleLogout}
             disabled={loading}
-            className="rounded-full border border-white/30 px-4 py-2 text-zinc-300 transition hover:border-white hover:text-white disabled:opacity-50"
+            className={`rounded-full border px-4 py-2 transition disabled:opacity-50 ${
+              isGlassy
+                ? "border-white/30 text-zinc-200 hover:border-white hover:text-white"
+                : "border-slate-200 text-slate-700 hover:border-slate-300 hover:text-slate-900"
+            }`}
           >
             {loading ? "..." : "Logout"}
           </button>
         ) : (
           <Link
             href="/auth/login"
-            className="rounded-full border border-white bg-white px-4 py-2 text-black transition hover:shadow-[0_10px_40px_rgba(255,255,255,0.15)]"
+            className={`rounded-full border px-4 py-2 font-medium transition ${
+              isGlassy
+                ? "border-white bg-white text-black hover:shadow-[0_10px_40px_rgba(255,255,255,0.15)]"
+                : "border-indigo-500 bg-indigo-600 text-white hover:bg-indigo-500 hover:border-indigo-500"
+            }`}
           >
             Login
           </Link>

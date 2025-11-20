@@ -77,8 +77,8 @@ export default function InsightPanel() {
   const insights = useMemo(() => insightSets[range], [range]);
 
   return (
-    <section className="rounded-3xl border border-white/10 bg-black/40 p-6 shadow-[0_30px_120px_rgba(0,0,0,0.55)] backdrop-blur">
-      <div className="flex flex-wrap items-center justify-between gap-3 text-xs uppercase tracking-[0.3em] text-zinc-500">
+    <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="flex flex-wrap items-center justify-between gap-3 text-xs uppercase tracking-[0.3em] text-slate-500">
         <span>AI insight coach</span>
         <div className="flex gap-2 text-[11px]">
           {(Object.keys(insightSets) as Array<keyof typeof insightSets>).map(
@@ -89,8 +89,8 @@ export default function InsightPanel() {
                 onClick={() => setRange(option)}
                 className={`rounded-full border px-3 py-1 transition ${
                   option === range
-                    ? "border-white bg-white text-black"
-                    : "border-white/10 text-white/80 hover:border-white/40"
+                    ? "border-indigo-200 bg-indigo-50 text-indigo-800"
+                    : "border-slate-200 text-slate-700 hover:border-indigo-200"
                 }`}
               >
                 {option}
@@ -104,21 +104,20 @@ export default function InsightPanel() {
         {insights.map((insight) => (
           <div
             key={`${insight.label}-${range}`}
-            className="rounded-2xl border border-white/10 bg-white/[0.02] p-4"
+            className="rounded-2xl border border-slate-200 bg-slate-50 p-4"
           >
-            <p className="text-xs uppercase tracking-[0.3em] text-zinc-500">
+            <p className="text-xs uppercase tracking-[0.3em] text-slate-500">
               {insight.label}
             </p>
-            <p className="mt-3 text-lg text-white">{insight.value}</p>
-            <p className="text-xs text-emerald-300">{insight.delta}</p>
-            <p className="mt-4 text-xs text-zinc-400">{insight.advisory}</p>
+            <p className="mt-3 text-lg font-semibold text-slate-900">{insight.value}</p>
+            <p className="text-xs text-emerald-700">{insight.delta}</p>
+            <p className="mt-4 text-xs text-slate-600">{insight.advisory}</p>
           </div>
         ))}
       </div>
 
-      <div className="mt-6 rounded-2xl border border-dashed border-white/15 p-4 text-xs text-zinc-400">
-        Insights run in-memory inside your project. Personally identifiable
-        student data never leaves your Vercel deployment.
+      <div className="mt-6 rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-4 text-xs text-slate-600">
+        Insights run in-memory inside your project. Personally identifiable student data never leaves your Vercel deployment.
       </div>
     </section>
   );

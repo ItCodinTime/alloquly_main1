@@ -36,7 +36,7 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="relative isolate flex min-h-screen items-center justify-center overflow-hidden px-4 text-white">
+    <main className="relative isolate flex min-h-screen items-center justify-center overflow-hidden bg-slate-950 px-4 text-white">
       <div className="pointer-events-none absolute inset-0 opacity-60">
         <div className="absolute inset-y-0 right-0 w-1/2 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,.09),_transparent_55%)] blur-3xl" />
         <div className="absolute inset-y-0 left-0 w-1/2 bg-[radial-gradient(circle_at_bottom,_rgba(255,255,255,.05),_transparent_50%)] blur-3xl" />

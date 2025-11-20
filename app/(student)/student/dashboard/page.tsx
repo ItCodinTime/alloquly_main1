@@ -5,12 +5,12 @@ import { motion } from "framer-motion";
 import { CheckCircle2, Headphones, Loader2, NotebookPen, Timer } from "lucide-react";
 
 import { ThemeProvider, useTheme } from "@/components/theme/ThemeProvider";
-import { FloatingDecor } from "@/components/ambient/FloatingDecor";
 import { StudentNavbar } from "@/components/dashboard/StudentNavbar";
 import { StudentFooter } from "@/components/dashboard/StudentFooter";
 import { fetchStudentDashboard } from "@/lib/services/studentDashboard";
 import type { StudentDashboardData } from "@/lib/mocks/studentDashboard";
 import { getMockUser } from "@/lib/mockAuth";
+import JoinClassForm from "@/components/join-class-form";
 
 const supportIconMap = {
   Checklist: CheckCircle2,
@@ -35,8 +35,8 @@ function StudentDashboardContent() {
   const [error, setError] = useState<string | null>(null);
 
   const backgroundClass = isDark
-    ? "bg-[linear-gradient(180deg,_rgba(3,10,28,1)_0%,_rgba(9,17,36,1)_40%,_rgba(18,29,60,1)_65%,_rgba(28,43,84,1)_100%)] text-slate-50"
-    : "bg-gradient-to-br from-slate-50 via-white to-indigo-50 text-slate-900";
+    ? "bg-slate-950 text-slate-50"
+    : "bg-slate-50 text-slate-900";
   const mutedText = isDark ? "text-slate-300" : "text-slate-600";
 
   useEffect(() => {
@@ -65,20 +65,6 @@ function StudentDashboardContent() {
     <div className={`flex min-h-screen flex-col transition-colors duration-300 ${backgroundClass}`}>
       <StudentNavbar studentName={data?.profile.name} />
       <main className="relative flex-1 overflow-hidden">
-        <FloatingDecor />
-        <motion.div
-          aria-hidden
-          className="pointer-events-none absolute -left-10 top-20 h-80 w-80 rounded-full bg-gradient-to-r from-indigo-500/40 to-emerald-400/30 blur-3xl"
-          animate={{ opacity: [0.15, 0.3, 0.15], scale: [1, 1.1, 1] }}
-          transition={{ duration: 8, repeat: Infinity }}
-        />
-        <motion.div
-          aria-hidden
-          className="pointer-events-none absolute -right-16 bottom-10 h-[24rem] w-[24rem] rounded-full bg-gradient-to-r from-purple-500/30 to-indigo-400/20 blur-[160px]"
-          animate={{ opacity: [0.2, 0.35, 0.2], scale: [1.05, 0.95, 1.05] }}
-          transition={{ duration: 10, repeat: Infinity }}
-        />
-
         <div className="relative z-10 px-5 py-10 md:py-14">
           {loading ? (
             <div className="flex min-h-[60vh] flex-col items-center justify-center gap-3 text-sm text-slate-500">
@@ -280,6 +266,9 @@ function StudentDashboardContent() {
                   </div>
                 </section>
               </div>
+
+              {/* Join code onboarding */}
+              <JoinClassForm />
 
               <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
                 {/* Celebrations */}
