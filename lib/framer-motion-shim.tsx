@@ -61,13 +61,30 @@ const resolveStyle = (style?: React.CSSProperties) => {
   return next;
 };
 
-type MotionComponentProps = React.HTMLAttributes<HTMLElement> & { style?: React.CSSProperties };
+type MotionComponentProps = React.HTMLAttributes<HTMLElement> & {
+  style?: React.CSSProperties;
+  animate?: Record<string, unknown>;
+  initial?: Record<string, unknown>;
+  transition?: Record<string, unknown>;
+  whileHover?: Record<string, unknown>;
+  whileTap?: Record<string, unknown>;
+  variants?: Variants;
+};
 
 const motion = new Proxy<Record<string, React.FC<MotionComponentProps>>>(
   {},
   {
     get: (_target, tag: string) => {
-      const MotionComponent: React.FC<MotionComponentProps> = ({ style, ...rest }) => {
+      const MotionComponent: React.FC<MotionComponentProps> = ({
+        style,
+        animate, // ignored
+        initial,
+        transition,
+        whileHover,
+        whileTap,
+        variants,
+        ...rest
+      }) => {
         const motionValues = useMemo(() => {
           if (!style) return [];
           return Object.values(style).filter(isMotionValue);
