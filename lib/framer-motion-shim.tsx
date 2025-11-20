@@ -137,7 +137,9 @@ export function useTransform(value: MotionValue<number>, input: number[], output
       const mapped = outStart + progress * (outEnd - outStart);
       target.set(mapped);
     });
-    return () => unsub();
+    return () => {
+      unsub();
+    };
   }, [value, input, output, target]);
 
   return target;
