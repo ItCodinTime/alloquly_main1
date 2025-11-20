@@ -62,6 +62,7 @@ const resolveStyle = (style?: React.CSSProperties) => {
 };
 
 type MotionComponentProps = React.HTMLAttributes<HTMLElement> & {
+  type?: string;
   style?: React.CSSProperties;
   animate?: Record<string, unknown>;
   initial?: Record<string, unknown>;
