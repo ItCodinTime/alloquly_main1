@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { CheckCircle, ClipboardList, Loader2, Users } from "lucide-react";
+import { CheckCircle, ClipboardList, Loader2, Users } from "@/components/icons/lucide";
 
 import { ThemeProvider, useTheme } from "@/components/theme/ThemeProvider";
 import { TeacherNavbar } from "@/components/dashboard/TeacherNavbar";

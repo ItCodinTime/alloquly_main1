@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import AdmZip from "adm-zip";
 
 const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
 
@@ -18,20 +17,6 @@ const arrayBufferToString = (buffer: ArrayBuffer) => {
   return new TextDecoder("utf-8").decode(buffer);
 };
 
-const extractFromDocx = (buffer: Buffer) => {
-  const zip = new AdmZip(buffer);
-  const documentEntry = zip.getEntry("word/document.xml");
-  if (!documentEntry) {
-    return "";
-  }
-  const xml = documentEntry.getData().toString("utf-8");
-  return xml
-    .replace(/<w:p[^>]*>/g, "\n")
-    .replace(/<[^>]+>/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-};
-
 const extractFromRtf = (text: string) => {
   return text
     .replace(/\\'([0-9a-fA-F]{2})/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)))
@@ -40,31 +25,6 @@ const extractFromRtf = (text: string) => {
     .replace(/[{}]/g, "")
     .replace(/\s+/g, " ")
     .trim();
-};
-
-type PdfParseCtor = typeof import("pdf-parse").PDFParse;
-let cachedPdfParser: PdfParseCtor | null = null;
-
-const loadPdfParser = async () => {
-  if (!cachedPdfParser) {
-    const mod = (await import("pdf-parse")) as { PDFParse?: PdfParseCtor; default?: PdfParseCtor };
-    cachedPdfParser = mod.PDFParse ?? mod.default ?? null;
-    if (!cachedPdfParser) {
-      throw new Error("pdf-parse module did not expose PDFParse.");
-    }
-  }
-  return cachedPdfParser;
-};
-
-const extractFromPdf = async (buffer: Buffer) => {
-  const PDFParse = await loadPdfParser();
-  const parser = new PDFParse({ data: buffer });
-  try {
-    const pdfData = await parser.getText();
-    return pdfData.text;
-  } finally {
-    await parser.destroy();
-  }
 };
 
 export const runtime = "nodejs";
@@ -97,9 +57,21 @@ export async function POST(req: Request) {
     if (plainTextTypes.has(mimeType) || ext === "txt" || ext === "md") {
       extractedText = arrayBufferToString(arrayBuffer);
     } else if (mimeType === "application/pdf" || ext === "pdf") {
-      extractedText = await extractFromPdf(buffer);
+      return NextResponse.json(
+        {
+          error: "PDF extraction isn't enabled. Export as plain text or RTF before uploading.",
+          meta: { fileName, mimeType },
+        },
+        { status: 415 },
+      );
     } else if (mimeType === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" || ext === "docx") {
-      extractedText = extractFromDocx(buffer);
+      return NextResponse.json(
+        {
+          error: "DOCX extraction isn't supported in this environment. Export your file as PDF or RTF and try again.",
+          meta: { fileName, mimeType },
+        },
+        { status: 415 },
+      );
     } else if (mimeType === "application/rtf" || ext === "rtf") {
       extractedText = extractFromRtf(arrayBufferToString(arrayBuffer));
     } else {

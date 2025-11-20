@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Inbox } from "lucide-react";
+import { Inbox } from "@/components/icons/lucide";
 
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { mockTeacherDashboardData } from "@/lib/mocks/teacherDashboard";

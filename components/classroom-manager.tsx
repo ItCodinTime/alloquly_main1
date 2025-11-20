@@ -83,7 +83,7 @@ export default function ClassroomManager() {
     loadStudents();
   }, []);
 
-  function handleAddStudent(event: React.FormEvent<HTMLFormElement>) {
+  async function handleAddStudent(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     if (!name.trim()) {

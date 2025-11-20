@@ -128,7 +128,7 @@ export default function StudentWorkspace() {
             ))}
           </div>
           <p className="mt-2 text-xs text-slate-500">
-            Scene plays when overwhelm sentiment > 0.7.
+            Scene plays when overwhelm sentiment {">"} 0.7.
           </p>
         </div>
         <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">

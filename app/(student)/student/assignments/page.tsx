@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { CalendarClock, CheckCircle2, Loader2, NotebookPen, Play } from "lucide-react";
+import { CalendarClock, CheckCircle2, Loader2, NotebookPen, Play } from "@/components/icons/lucide";
 
 import { ThemeProvider, useTheme } from "@/components/theme/ThemeProvider";
 import { FloatingDecor } from "@/components/ambient/FloatingDecor";

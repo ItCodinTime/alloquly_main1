@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { CheckCircle2, Headphones, Loader2, NotebookPen, Timer } from "lucide-react";
+import { CheckCircle2, Headphones, Loader2, NotebookPen, Timer } from "@/components/icons/lucide";
 
 import { ThemeProvider, useTheme } from "@/components/theme/ThemeProvider";
 import { StudentNavbar } from "@/components/dashboard/StudentNavbar";

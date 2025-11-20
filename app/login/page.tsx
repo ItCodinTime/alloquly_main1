@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Book, GraduationCap } from "lucide-react";
+import { Book, GraduationCap } from "@/components/icons/lucide";
 
 import { ThemeProvider, useTheme } from "@/components/theme/ThemeProvider";
 import { Navbar } from "@/components/navbar";

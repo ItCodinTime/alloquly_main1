@@ -6,6 +6,8 @@
   --muted: #475569;
   --border: #e2e8f0;
   --glow: rgba(59, 130, 246, 0.15);
+  --font-geist-sans: "Inter", "SF Pro Display", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-geist-mono: "Space Mono", SFMono-Regular, Menlo, monospace;
 }
 
 @theme inline {
