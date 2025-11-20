@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
   const redirectTo = requestUrl.searchParams.get("redirectTo") || "/assignments";
 
   if (code) {
-    const cookieStore = await cookies();
+    const cookieStore = cookies();
     const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
     await supabase.auth.exchangeCodeForSession(code);
   }

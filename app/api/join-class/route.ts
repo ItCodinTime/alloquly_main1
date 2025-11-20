@@ -92,7 +92,7 @@ export async function POST(request: Request) {
 
 // Teacher generates a join code (uses authenticated session)
 export async function GET(request: Request) {
-  const cookieStore = await cookies();
+  const cookieStore = cookies();
   const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
 
   const {
