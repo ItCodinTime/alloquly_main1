@@ -76,16 +76,7 @@ const motion = new Proxy<Record<string, React.FC<MotionComponentProps>>>(
   {},
   {
     get: (_target, tag: string) => {
-      const MotionComponent: React.FC<MotionComponentProps> = ({
-        style,
-        animate, // ignored
-        initial,
-        transition,
-        whileHover,
-        whileTap,
-        variants,
-        ...rest
-      }) => {
+      const MotionComponent: React.FC<MotionComponentProps> = ({ style, ...rest }) => {
         const motionValues = useMemo(() => {
           if (!style) return [];
           return Object.values(style).filter(isMotionValue);

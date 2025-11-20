@@ -2,10 +2,10 @@
 
 import React from "react";
 
-type IconProps = React.SVGProps<SVGSVGElement>;
+type IconProps = React.SVGProps<SVGSVGElement> & { size?: number };
 
 const createIcon = (paths: React.ReactNode) => {
-  return function Icon(props: IconProps) {
+  return function Icon({ size = 24, ...props }: IconProps) {
     return (
       <svg
         viewBox="0 0 24 24"
@@ -15,6 +15,8 @@ const createIcon = (paths: React.ReactNode) => {
         strokeLinecap="round"
         strokeLinejoin="round"
         aria-hidden
+        width={size}
+        height={size}
         {...props}
       >
         {paths}
