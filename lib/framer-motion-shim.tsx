@@ -35,7 +35,12 @@ const isMotionValue = (value: unknown): value is MotionValue<unknown> =>
 
 const unwrapStyleValue = (value: unknown) => (isMotionValue(value) ? value.get() : value);
 
-const resolveStyle = (style?: React.CSSProperties) => {
+type MotionStyle = React.CSSProperties & {
+  x?: number | MotionValue<number>;
+  y?: number | MotionValue<number>;
+};
+
+const resolveStyle = (style?: MotionStyle) => {
   if (!style) return style;
   const next: React.CSSProperties = {};
   let translateX: number | undefined;
@@ -63,7 +68,7 @@ const resolveStyle = (style?: React.CSSProperties) => {
 
 type MotionComponentProps = React.HTMLAttributes<HTMLElement> & {
   type?: string;
-  style?: React.CSSProperties;
+  style?: MotionStyle;
   animate?: Record<string, unknown>;
   initial?: Record<string, unknown>;
   transition?: Record<string, unknown>;
