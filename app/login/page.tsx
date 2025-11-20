@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Book, GraduationCap } from "@/components/icons/lucide";
 
@@ -23,7 +22,6 @@ export default function LoginPage() {
 function LoginContent() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
-  const router = useRouter();
   const [role, setRole] = useState<"teacher" | "student">("teacher");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -75,7 +73,7 @@ function LoginContent() {
     console.log({ role, email, password });
     // TODO: Integrate Supabase or backend auth provider
     const destination = role === "teacher" ? "/dashboard" : "/student/dashboard";
-    router.push(destination);
+    window.location.assign(destination);
   };
 
   return (

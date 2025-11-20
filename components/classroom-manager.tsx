@@ -66,7 +66,7 @@ export default function ClassroomManager() {
   const inviteLink = useMemo(() => {
     const token = createId().slice(0, 6);
     return `https://classroom.alloquly.app/join?room=${token}`;
-  }, [students.length]);
+  }, []);
 
   useEffect(() => {
     async function loadStudents() {

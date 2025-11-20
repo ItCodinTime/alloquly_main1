@@ -1,11 +1,10 @@
 "use client";
 
 import { createClient } from "@/lib/supabase-client";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 export default function LoginPage() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirectTo") || "/assignments";
   const [loading, setLoading] = useState(false);

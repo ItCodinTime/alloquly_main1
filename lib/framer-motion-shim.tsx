@@ -30,72 +30,62 @@ class BasicMotionValue<T> {
 export type MotionValue<T> = BasicMotionValue<T>;
 export type Variants = Record<string, Record<string, unknown>>;
 
-const isMotionValue = (value: unknown): value is MotionValue<unknown> => {
-  return Boolean(value && typeof value === "object" && "onChange" in value && typeof (value as MotionValue<unknown>).onChange === "function");
-};
+const isMotionValue = (value: unknown): value is MotionValue<unknown> =>
+  Boolean(value && typeof value === "object" && "onChange" in value && typeof (value as MotionValue<unknown>).onChange === "function");
 
-const unwrapValue = (value: unknown) => {
-  if (isMotionValue(value)) {
-    return value.get();
-  }
-  return value;
-};
+const unwrapStyleValue = (value: unknown) => (isMotionValue(value) ? value.get() : value);
 
-const resolveStyle = (style: React.CSSProperties | undefined) => {
+const resolveStyle = (style?: React.CSSProperties) => {
   if (!style) return style;
-  const resolved: React.CSSProperties = {};
+  const next: React.CSSProperties = {};
   let translateX: number | undefined;
   let translateY: number | undefined;
 
   Object.entries(style).forEach(([key, raw]) => {
     if (key === "x") {
-      translateX = Number(unwrapValue(raw)) || 0;
+      translateX = Number(unwrapStyleValue(raw)) || 0;
       return;
     }
     if (key === "y") {
-      translateY = Number(unwrapValue(raw)) || 0;
+      translateY = Number(unwrapStyleValue(raw)) || 0;
       return;
     }
-    (resolved as Record<string, unknown>)[key] = unwrapValue(raw as unknown);
+    (next as Record<string, unknown>)[key] = unwrapStyleValue(raw);
   });
 
   if (translateX !== undefined || translateY !== undefined) {
     const translate = `translate3d(${translateX ?? 0}px, ${translateY ?? 0}px, 0)`;
-    resolved.transform = resolved.transform ? `${resolved.transform} ${translate}` : translate;
+    next.transform = next.transform ? `${next.transform} ${translate}` : translate;
   }
 
-  return resolved;
+  return next;
 };
 
-function collectMotionValues(style: React.CSSProperties | undefined) {
-  if (!style) return [];
-  return Object.values(style).filter(isMotionValue);
-}
+type MotionComponentProps = React.HTMLAttributes<HTMLElement> & { style?: React.CSSProperties };
 
-const motion = new Proxy(
+const motion = new Proxy<Record<string, React.FC<MotionComponentProps>>>(
   {},
   {
     get: (_target, tag: string) => {
-      return React.forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement>>(function MotionComponent(
-        { style, ...rest },
-        ref,
-      ) {
-        const motionValues = useMemo(() => collectMotionValues(style), [style]);
-        const [, force] = useState(0);
+      const MotionComponent: React.FC<MotionComponentProps> = ({ style, ...rest }) => {
+        const motionValues = useMemo(() => {
+          if (!style) return [];
+          return Object.values(style).filter(isMotionValue);
+        }, [style]);
 
+        const [, forceTick] = useState(0);
         useEffect(() => {
-          const unsubs = motionValues.map((mv) => mv.onChange(() => force((prev) => prev + 1)));
-          return () => {
-            unsubs.forEach((unsub) => unsub());
-          };
+          const unsubs = motionValues.map((mv) => mv.onChange(() => forceTick((prev) => prev + 1)));
+          return () => unsubs.forEach((unsub) => unsub());
         }, [motionValues]);
 
         const resolvedStyle = resolveStyle(style);
-        return React.createElement(tag, { ref, style: resolvedStyle, ...rest });
-      });
+        return React.createElement(tag, { style: resolvedStyle, ...rest });
+      };
+      return MotionComponent;
     },
   },
-) as Record<string, React.ComponentType<any>>;
+) as Record<string, React.FC<MotionComponentProps>>;
 
 export { motion };
 

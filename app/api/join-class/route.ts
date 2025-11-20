@@ -35,7 +35,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid or expired code." }, { status: 400 });
     }
 
-    const teacherId = codeRow.classes?.user_id;
+    const classRecord = Array.isArray(codeRow.classes) ? codeRow.classes[0] : codeRow.classes;
+    const teacherId = classRecord?.user_id;
     if (!teacherId) {
       return NextResponse.json({ error: "Class not found for this code." }, { status: 400 });
     }
@@ -75,7 +76,7 @@ export async function POST(request: Request) {
         class_id: codeRow.class_id,
         class_code: codeRow.code,
         classroom: {
-          classroomName: codeRow.classes?.name ?? "Class",
+          classroomName: classRecord?.name ?? "Class",
           teacherId,
         },
         student: studentRow,
@@ -91,7 +92,7 @@ export async function POST(request: Request) {
 }
 
 // Teacher generates a join code (uses authenticated session)
-export async function GET(request: Request) {
+export async function GET() {
   const cookieStore = cookies();
   const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
 
