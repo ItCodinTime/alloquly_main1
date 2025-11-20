@@ -71,6 +71,7 @@ type MotionComponentProps = React.HTMLAttributes<HTMLElement> & {
   style?: MotionStyle;
   animate?: Record<string, unknown>;
   initial?: Record<string, unknown>;
+  exit?: Record<string, unknown>;
   transition?: Record<string, unknown>;
   whileHover?: Record<string, unknown>;
   whileTap?: Record<string, unknown>;
