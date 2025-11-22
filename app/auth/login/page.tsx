@@ -29,13 +29,16 @@ export default function LoginPage() {
             access_type: "offline",
             prompt: "consent",
           },
+          skipBrowserRedirect: true,
         },
       });
 
       if (error) throw error;
       if (data?.url) {
-        window.location.href = data.url;
+        window.location.assign(data.url);
+        return;
       }
+      throw new Error("Unable to start Google OAuth.");
     } catch (err) {
       setError((err as Error).message);
       setLoading(false);
