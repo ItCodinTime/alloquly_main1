@@ -96,7 +96,7 @@ export function Navbar({ defaultName }: NavbarProps = {}) {
           </nav>
           <div className="flex items-center gap-3 text-sm font-semibold">
             <Link
-              href="/teacher/login"
+              href="/auth/login"
               className={`transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 ${
                 isDark ? "text-slate-200 hover:text-white" : "text-slate-600 hover:text-slate-900"
               }`}
@@ -104,14 +104,14 @@ export function Navbar({ defaultName }: NavbarProps = {}) {
               Log in
             </Link>
             <Link
-              href="/teacher/signup"
+              href="/auth/login?redirectTo=/onboarding"
               className={`rounded-full border px-4 py-2 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 ${
                 isDark
                   ? "border-white/20 text-white hover:bg-white/10"
                   : "border-slate-200 text-slate-900 hover:bg-slate-100"
               }`}
             >
-              Sign up
+              Get access
             </Link>
             <button
               type="button"
@@ -205,7 +205,7 @@ export function Navbar({ defaultName }: NavbarProps = {}) {
               </nav>
               <div className="mt-4 flex flex-col gap-3 text-sm font-semibold">
                 <Link
-                  href="/teacher/login"
+                  href="/auth/login"
                   className={`rounded-full border px-4 py-2 text-center ${
                     isDark ? "border-white/10 text-white" : "border-slate-200 text-slate-800"
                   }`}
@@ -214,13 +214,13 @@ export function Navbar({ defaultName }: NavbarProps = {}) {
                   Log in
                 </Link>
                 <Link
-                  href="/teacher/signup"
+                  href="/auth/login?redirectTo=/onboarding"
                   className={`rounded-full border px-4 py-2 text-center ${
                     isDark ? "border-white/20 text-white" : "border-slate-200 text-slate-900"
                   }`}
                   onClick={() => setMenuOpen(false)}
                 >
-                  Sign up
+                  Get access
                 </Link>
                 <button
                   type="button"
