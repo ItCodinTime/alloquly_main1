@@ -1,28 +1,19 @@
 "use client";
 
 import { createClient } from "@/lib/supabase-client";
-import { Suspense, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function LoginPage() {
-  return (
-    <Suspense
-      fallback={
-        <main className="flex min-h-screen items-center justify-center bg-slate-950 text-white">
-          Loading secure login…
-        </main>
-      }
-    >
-      <LoginForm />
-    </Suspense>
-  );
-}
-
-function LoginForm() {
-  const searchParams = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo") || "/assignments";
+  const [redirectTo, setRedirectTo] = useState("/assignments");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const url = new URL(window.location.href);
+    const next = url.searchParams.get("redirectTo");
+    if (next) setRedirectTo(next);
+  }, []);
 
   async function handleGoogleLogin() {
     setLoading(true);
@@ -33,7 +24,7 @@ function LoginForm() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/auth/callback?redirectTo=${redirectTo}`,
+          redirectTo: `${window.location.origin}/auth/callback?redirectTo=${encodeURIComponent(redirectTo)}`,
           queryParams: {
             access_type: "offline",
             prompt: "consent",
