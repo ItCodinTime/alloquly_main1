@@ -48,7 +48,12 @@ export default async function InsightsPage() {
     return acc;
   }, {}) ?? {};
 
-  const submissionsList: SubmissionRow[] = submissions ?? [];
+  const submissionsList: SubmissionRow[] =
+    (submissions ?? []).map((submission) => ({
+      ...submission,
+      assignment: Array.isArray(submission.assignment) ? submission.assignment[0] ?? null : submission.assignment,
+      student: Array.isArray(submission.student) ? submission.student[0] ?? null : submission.student,
+    })) ?? [];
   const totalSubmissions = submissionsList.length;
   const gradedSubmissions = submissionsList.filter((submission) => submission.graded).length;
   const pendingSubmissions = totalSubmissions - gradedSubmissions;
