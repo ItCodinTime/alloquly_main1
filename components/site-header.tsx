@@ -51,6 +51,10 @@ export default function SiteHeader() {
     ? "sticky top-0 z-20 mx-auto flex w-full max-w-6xl items-center justify-between gap-4 rounded-full border border-white/10 bg-slate-900/70 px-4 py-3 text-white shadow-lg backdrop-blur"
     : "sticky top-0 z-20 mx-auto flex w-full max-w-6xl items-center justify-between gap-4 rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-800 shadow-sm";
 
+  if (pathname === "/" || pathname?.startsWith("/auth")) {
+    return null;
+  }
+
   return (
     <header className={headerClass}>
       <div

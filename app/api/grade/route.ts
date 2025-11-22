@@ -1,14 +1,17 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 
 type GradeRequest = {
   submission?: string;
   assignment?: string;
   learnerProfile?: string;
+  submissionId?: string;
 };
 
 export async function POST(request: Request) {
   try {
-    const { submission, assignment, learnerProfile } = (await request.json()) as GradeRequest;
+    const { submission, assignment, learnerProfile, submissionId } = (await request.json()) as GradeRequest;
 
     if (!submission || typeof submission !== "string") {
       return NextResponse.json({ error: "Missing submission text." }, { status: 400 });
@@ -43,16 +46,18 @@ export async function POST(request: Request) {
     }
 
     const parsed = JSON.parse(content) as AIGradeResult;
-    return NextResponse.json(
-      {
-        score: parsed.score ?? 0,
-        rubric: parsed.rubric ?? [],
-        summary: parsed.summary ?? "",
-        next_steps: parsed.next_steps ?? [],
-        source: "openai" as const,
-      },
-      { status: 200 },
-    );
+    if (submissionId) {
+      await persistGrade(submissionId, parsed);
+    }
+
+    return NextResponse.json({
+      score: parsed.score ?? 0,
+      rubric: parsed.rubric ?? [],
+      summary: parsed.summary ?? "",
+      strengths: parsed.strengths ?? [],
+      next_steps: parsed.next_steps ?? [],
+      source: "openai" as const,
+    });
   } catch (error) {
     console.error("Grade API failure", error);
     return NextResponse.json({ error: "AI grading service unavailable." }, { status: 500 });
@@ -68,11 +73,11 @@ function buildOpenAIRequest(submission: string, assignment?: string, learnerProf
       {
         role: "system",
         content:
-          "You are an assistive grading coach for neuroinclusive classrooms. Return JSON with a total score (0-100), rubric array, summary, and next_steps.",
+          "You are an assistive grading coach for neuroinclusive classrooms. Strip identifying details and return JSON with score (0-100), rubric array, summary, strengths, and next_steps.",
       },
       {
         role: "user",
-        content: `Assignment (context optional): ${assignment ?? "N/A"}\nLearner profile: ${learnerProfile ?? "Not provided"}\nSubmission:\n${submission}\n\nReturn JSON:\n{\n score: number;\n rubric: Array<{label:string; score:number; of:number; note:string}>;\n summary: string;\n next_steps: string[];\n}\nFocus feedback on clarity, evidence, structure, modality options, and accommodations fidelity. Keep notes concise and classroom-ready.`,
+        content: `Assignment context (optional): ${assignment ?? "N/A"}\nLearner profile: ${learnerProfile ?? "Not provided"}\nSubmission:\n${submission}\n\nReturn JSON:\n{\n score: number;\n rubric: Array<{label:string; score:number; of:number; note:string}>;\n summary: string;\n strengths: string[];\n next_steps: string[];\n}\nFocus on clarity, evidence, structure, modality options, and accommodation fidelity.`,
       },
     ],
   };
@@ -87,4 +92,26 @@ type AIGradeResult = {
   rubric?: Array<{ label: string; score: number; of: number; note: string }>;
   summary?: string;
   next_steps?: string[];
+  strengths?: string[];
 };
+
+async function persistGrade(submissionId: string, grade: AIGradeResult) {
+  try {
+    const cookieStore = cookies();
+    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+    const payload = {
+      graded: true,
+      score: grade.score ?? null,
+      feedback: grade.summary ?? null,
+      rubric: grade.rubric ?? [],
+      strengths: grade.strengths ?? [],
+      next_steps: grade.next_steps ?? [],
+    };
+    const { error } = await supabase.from("submissions").update(payload).eq("id", submissionId);
+    if (error) {
+      console.error("Persist grade error", error);
+    }
+  } catch (error) {
+    console.error("Grade persistence failure", error);
+  }
+}

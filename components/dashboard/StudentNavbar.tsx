@@ -3,22 +3,19 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { getMockUser } from "@/lib/mockAuth";
-
 interface StudentNavbarProps {
   studentName?: string;
 }
 
 const navLinks = [
   { href: "/student/dashboard", label: "Overview" },
-  { href: "/student/assignments", label: "Assignments" },
-  { href: "/student/supports", label: "Supports" },
+  { href: "/student/dashboard#assignments", label: "Assignments" },
+  { href: "/student/dashboard#supports", label: "Supports" },
 ];
 
 export function StudentNavbar({ studentName }: StudentNavbarProps) {
   const pathname = usePathname();
-  const mockStudent = getMockUser("student");
-  const displayName = studentName ?? mockStudent.name;
+  const displayName = studentName ?? "Student";
 
   return (
     <header className="border-b border-white/10 bg-slate-900/80 text-white backdrop-blur-xl">

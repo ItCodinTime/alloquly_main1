@@ -1,13 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 type ConfigResponse = { hasAIKey: boolean };
 
 export default function EnvStatus() {
   const [hasKey, setHasKey] = useState<boolean | null>(null);
+  const pathname = usePathname();
 
   useEffect(() => {
+    if (pathname === "/" || pathname?.startsWith("/auth")) return;
     async function load() {
       try {
         const res = await fetch("/api/config", { cache: "no-store" });
@@ -19,9 +22,10 @@ export default function EnvStatus() {
       }
     }
     load();
-  }, []);
+  }, [pathname]);
 
   if (hasKey === null) return null;
+  if (pathname === "/" || pathname?.startsWith("/auth")) return null;
 
   const tone = hasKey
     ? "border-emerald-200 bg-emerald-50 text-emerald-800"

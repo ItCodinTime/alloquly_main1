@@ -1,6 +1,6 @@
  "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type RemodelResult = {
   variant: string;
@@ -8,6 +8,10 @@ type RemodelResult = {
   accommodations: string[];
   missions: string[];
   source: "mock" | "openai";
+};
+
+type AssignmentRemodelerProps = {
+  classes: Array<{ id: string; name: string; section?: string | null }>;
 };
 
 const MAX_CHAR_COUNT = 1800;
@@ -37,15 +41,23 @@ const neuroProfiles = [
 
 const sampleAssignment = `Write a two-paragraph reflection about how climate change impacts your city. Include one statistic and a personal story.`;
 
-export default function AssignmentRemodeler() {
+export default function AssignmentRemodeler({ classes }: AssignmentRemodelerProps) {
   const [assignment, setAssignment] = useState(sampleAssignment);
   const [profile, setProfile] = useState(neuroProfiles[0].value);
+  const [selectedClass, setSelectedClass] = useState(classes[0]?.id ?? "");
+  const [dueDate, setDueDate] = useState("");
   const [attachmentName, setAttachmentName] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<RemodelResult | null>(null);
   const [saveNotice, setSaveNotice] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!selectedClass && classes.length > 0) {
+      setSelectedClass(classes[0].id);
+    }
+  }, [classes, selectedClass]);
 
   const profileCopy = useMemo(
     () => neuroProfiles.find((p) => p.value === profile)?.microcopy ?? "",
@@ -87,7 +99,14 @@ export default function AssignmentRemodeler() {
   }
 
   async function saveAssignment() {
-    if (!result) return;
+    if (!result) {
+      setSaveNotice("Run the AI builder first.");
+      return;
+    }
+    if (!selectedClass) {
+      setSaveNotice("Select a class to attach this assignment to.");
+      return;
+    }
     setIsSaving(true);
     setSaveNotice(null);
     try {
@@ -95,18 +114,23 @@ export default function AssignmentRemodeler() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          classId: selectedClass,
           title: assignment.slice(0, 60) || "Untitled assignment",
-          profile,
-          summary: result.summary,
-          content: assignment,
+          description: result.summary,
+          instructions: result.missions.join("\n"),
+          dueDate: dueDate || null,
+          accommodations: { items: result.accommodations },
+          differentiation: { profile },
         }),
       });
+      const payload = await response.json();
       if (!response.ok) {
-        const payload = await response.json();
         throw new Error(payload.error ?? "Unable to save to Supabase.");
       }
-      const payload = await response.json();
       setSaveNotice(`Saved as ${payload.assignment?.title ?? "assignment"}`);
+      setResult(null);
+      setAssignment(sampleAssignment);
+      setDueDate("");
     } catch (err) {
       setSaveNotice((err as Error).message);
     } finally {
@@ -125,6 +149,38 @@ export default function AssignmentRemodeler() {
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_0.9fr]">
         <div className="space-y-4">
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="space-y-2">
+              <label className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">
+                Class
+              </label>
+              <select
+                value={selectedClass}
+                onChange={(event) => setSelectedClass(event.target.value)}
+                className="w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm text-slate-900 focus:border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-100"
+              >
+                {classes.map((option) => (
+                  <option key={option.id} value={option.id}>
+                    {option.name}
+                    {option.section ? ` • ${option.section}` : ""}
+                  </option>
+                ))}
+                {classes.length === 0 && <option value="">Create a class first</option>}
+              </select>
+            </div>
+            <div className="space-y-2">
+              <label className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">
+                Due date
+              </label>
+              <input
+                type="date"
+                value={dueDate}
+                onChange={(event) => setDueDate(event.target.value)}
+                className="w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm text-slate-900 focus:border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-100"
+              />
+            </div>
+          </div>
+
           <label className="text-sm font-medium text-slate-700">
             Paste assignment or instructions
           </label>

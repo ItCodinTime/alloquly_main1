@@ -1,30 +1,26 @@
- "use client";
+"use client";
 
 import { useState } from "react";
 
 type JoinResult = {
   class_id?: string;
-  class_code?: string;
-  classroom?: {
-    classroomName?: string;
-    teacher?: string;
-  };
-  source?: string;
+  class_name?: string;
+  section?: string;
+  expires_at?: string;
   error?: string;
 };
 
 export default function JoinClassForm() {
   const [code, setCode] = useState("");
-  const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
+  const [status, setStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
 
   async function handleJoin(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setMessage(null);
-    if (!code.trim() || !email.trim()) {
-      setMessage("Enter the class code and your email.");
+    setStatus(null);
+
+    if (!code.trim()) {
+      setStatus("Enter the code your teacher shared.");
       return;
     }
 
@@ -33,71 +29,51 @@ export default function JoinClassForm() {
       const response = await fetch("/api/join-class", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          code: code.trim().toUpperCase(),
-          studentEmail: email.trim().toLowerCase(),
-          studentName: name.trim() || undefined,
-        }),
+        body: JSON.stringify({ code: code.trim().toUpperCase() }),
       });
       const payload = (await response.json()) as JoinResult;
       if (!response.ok) {
         throw new Error(payload.error ?? "Unable to join class.");
       }
-      setMessage(
-        `Joined ${payload.classroom?.classroomName ?? "classroom"} with ${payload.classroom?.teacher ?? "your teacher"}.`
-      );
       setCode("");
-      setEmail("");
-      setName("");
+      const expiry = payload.expires_at ? new Date(payload.expires_at).toLocaleTimeString() : "";
+      setStatus(
+        `Joined ${payload.class_name ?? "your class"} ${payload.section ?? ""}. Code valid until ${expiry || "expiry"}.`,
+      );
     } catch (error) {
-      setMessage((error as Error).message);
+      setStatus((error as Error).message);
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+    <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-white/5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Join with code</p>
-          <h3 className="text-lg font-semibold text-slate-900">Have a code from your teacher?</h3>
-          <p className="text-sm text-slate-600">Enter it to unlock your assignments instantly.</p>
+          <p className="text-xs uppercase tracking-[0.3em] text-slate-500 dark:text-slate-300">Join with code</p>
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Have a class code?</h3>
+          <p className="text-sm text-slate-600 dark:text-slate-300">Enter it here to unlock your workspace instantly.</p>
         </div>
       </div>
 
-      <form className="mt-4 grid gap-3 sm:grid-cols-3" onSubmit={handleJoin}>
+      <form className="mt-4 flex flex-col gap-3 sm:flex-row" onSubmit={handleJoin}>
         <input
           value={code}
           onChange={(event) => setCode(event.target.value)}
-          placeholder="Code (e.g., X7J9Q)"
-          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm text-slate-900 outline-none transition focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100"
+          placeholder="Code (e.g., X7J9Q8)"
+          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm text-slate-900 outline-none transition focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100 dark:border-white/20 dark:bg-transparent dark:text-white"
         />
-        <input
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-          placeholder="you@student.edu"
-          type="email"
-          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm text-slate-900 outline-none transition focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100"
-        />
-        <div className="flex gap-2">
-          <input
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            placeholder="Preferred name (optional)"
-            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm text-slate-900 outline-none transition focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100"
-          />
-          <button
-            type="submit"
-            disabled={loading}
-            className="rounded-xl border border-indigo-600 bg-indigo-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-indigo-500 disabled:opacity-70"
-          >
-            {loading ? "Joining…" : "Join"}
-          </button>
-        </div>
+        <button
+          type="submit"
+          disabled={loading}
+          className="rounded-xl border border-indigo-600 bg-indigo-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-indigo-500 disabled:opacity-70"
+        >
+          {loading ? "Joining…" : "Join class"}
+        </button>
       </form>
 
-      {message && <p className="mt-3 text-sm text-slate-600">{message}</p>}
+      {status && <p className="mt-3 text-sm text-slate-600 dark:text-slate-200">{status}</p>}
     </section>
   );
 }

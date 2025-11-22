@@ -1,24 +1,35 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { getMockUser } from "@/lib/mockAuth";
+import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
+import { createClient } from "@/lib/supabase-client";
 
 interface TeacherNavbarProps {
   teacherName?: string;
 }
 
 const navLinks = [
-  { href: "/dashboard", label: "Overview" },
-  { href: "/plans", label: "Plans" },
-  { href: "/classes", label: "Classes" },
-  { href: "/support", label: "Support" },
+  { href: "/teacher/dashboard", label: "Dashboard" },
+  { href: "/teacher/classes", label: "Classes" },
+  { href: "/assignments", label: "AI Tools" },
+  { href: "/insights", label: "Insights" },
+  { href: "/profile", label: "Settings" },
 ];
 
 export function TeacherNavbar({ teacherName }: TeacherNavbarProps) {
   const pathname = usePathname();
-  const mockUser = getMockUser();
-  const displayName = teacherName ?? mockUser.name;
+  const router = useRouter();
+  const [loggingOut, setLoggingOut] = useState(false);
+  const displayName = teacherName ?? "Teacher";
+
+  async function handleLogout() {
+    setLoggingOut(true);
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/auth/login");
+    router.refresh();
+  }
 
   return (
     <header className="bg-slate-900/90 border-b border-white/10 backdrop-blur-md text-white">
@@ -38,13 +49,20 @@ export function TeacherNavbar({ teacherName }: TeacherNavbarProps) {
               key={link.href}
               href={link.href}
               className={`rounded-full px-3 py-1 transition ${
-                pathname === link.href ? "bg-white/10 text-white" : "hover:text-white"
+                pathname.startsWith(link.href) ? "bg-white/10 text-white" : "hover:text-white"
               }`}
             >
               {link.label}
             </Link>
           ))}
-          <Link href="/login" className="rounded-full border border-white/20 px-3 py-1 text-xs uppercase tracking-[0.3em]">Logout</Link>
+          <button
+            type="button"
+            onClick={handleLogout}
+            disabled={loggingOut}
+            className="rounded-full border border-white/20 px-3 py-1 text-xs uppercase tracking-[0.3em] text-white transition hover:bg-white/10 disabled:opacity-60"
+          >
+            {loggingOut ? "..." : "Logout"}
+          </button>
         </nav>
         <Link
           href="/profile"

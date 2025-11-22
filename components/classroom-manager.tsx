@@ -62,6 +62,7 @@ export default function ClassroomManager() {
   const [loading, setLoading] = useState(false);
   const [joinCode, setJoinCode] = useState<string | null>(null);
   const [codeStatus, setCodeStatus] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const inviteLink = useMemo(() => {
     const token = createId().slice(0, 6);
@@ -170,6 +171,17 @@ export default function ClassroomManager() {
     }
   }
 
+  async function handleCopyJoinCode() {
+    if (!joinCode) return;
+    try {
+      await navigator.clipboard.writeText(joinCode);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setCodeStatus("Copy failed. Highlight the code to copy manually.");
+    }
+  }
+
   return (
     <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-3 text-xs uppercase tracking-[0.3em] text-slate-500">
@@ -271,12 +283,19 @@ export default function ClassroomManager() {
           </button>
         </div>
         {joinCode && (
-          <div className="mt-3 flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
+          <div className="mt-3 flex flex-col gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-xs uppercase tracking-[0.25em] text-slate-500">Student code</p>
-              <p className="text-lg font-semibold">{joinCode}</p>
+              <p className="text-2xl font-semibold tracking-widest text-slate-900">{joinCode}</p>
+              <p className="text-xs text-slate-500">Expires in ~30 mins</p>
             </div>
-            <span className="text-xs text-slate-500">Expires in ~30 mins</span>
+            <button
+              type="button"
+              onClick={handleCopyJoinCode}
+              className="rounded-full border border-indigo-600 px-4 py-2 text-sm font-semibold text-indigo-700 transition hover:bg-indigo-50"
+            >
+              {copied ? "Copied!" : "Copy code"}
+            </button>
           </div>
         )}
         {codeStatus && <p className="mt-2 text-xs text-slate-500">{codeStatus}</p>}
