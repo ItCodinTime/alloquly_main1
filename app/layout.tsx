@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import EnvStatus from "@/components/env-status";
 import SiteHeader from "@/components/site-header";
+import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -17,12 +18,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased bg-slate-50 text-slate-900">
-        <div className="mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-8 px-4 py-6 sm:px-8">
-          <SiteHeader />
-          <EnvStatus />
-          <div className="flex-1">{children}</div>
-        </div>
+      <body className="antialiased">
+        <ThemeProvider>
+          <div className="mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-8 px-4 py-6 sm:px-8">
+            <SiteHeader />
+            <EnvStatus />
+            <div className="flex-1">{children}</div>
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   );

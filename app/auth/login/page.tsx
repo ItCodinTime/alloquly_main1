@@ -1,24 +1,10 @@
 "use client";
 
 import { createClient } from "@/lib/supabase-client";
-import { Suspense, useState } from "react";
+import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 export default function LoginPage() {
-  return (
-    <Suspense
-      fallback={
-        <main className="flex min-h-screen items-center justify-center bg-slate-950 text-white">
-          Loading…
-        </main>
-      }
-    >
-      <LoginForm />
-    </Suspense>
-  );
-}
-
-function LoginForm() {
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirectTo") || "/assignments";
   const [loading, setLoading] = useState(false);
