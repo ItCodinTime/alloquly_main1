@@ -1,14 +1,14 @@
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
+import type { NextRequest } from "next/server";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-type RouteParams = {
-  params: {
-    classId: string;
-  };
+type RouteContext = {
+  params: Promise<{ classId: string }>;
 };
 
-export async function GET(_request: Request, { params }: RouteParams) {
+export async function GET(_request: NextRequest, context: RouteContext) {
+  const { classId } = await context.params;
   const cookieStore = cookies();
   const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
   const {
@@ -17,7 +17,6 @@ export async function GET(_request: Request, { params }: RouteParams) {
 
   if (!session) return NextResponse.json({ error: "Not authenticated." }, { status: 401 });
 
-  const classId = params.classId;
   const { data: classRow } = await supabase
     .from("classes")
     .select("id")
@@ -48,7 +47,8 @@ export async function GET(_request: Request, { params }: RouteParams) {
   return NextResponse.json(data);
 }
 
-export async function POST(_request: Request, { params }: RouteParams) {
+export async function POST(_request: NextRequest, context: RouteContext) {
+  const { classId } = await context.params;
   const cookieStore = cookies();
   const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
   const {
@@ -57,7 +57,6 @@ export async function POST(_request: Request, { params }: RouteParams) {
 
   if (!session) return NextResponse.json({ error: "Not authenticated." }, { status: 401 });
 
-  const classId = params.classId;
   const { data: classRow } = await supabase
     .from("classes")
     .select("id")

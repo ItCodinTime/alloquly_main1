@@ -1,16 +1,16 @@
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
+import type { NextRequest } from "next/server";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { randomUUID } from "crypto";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
 
-type RouteParams = {
-  params: {
-    classId: string;
-  };
+type RouteContext = {
+  params: Promise<{ classId: string }>;
 };
 
-export async function POST(request: Request, { params }: RouteParams) {
+export async function POST(request: NextRequest, context: RouteContext) {
+  const { classId } = await context.params;
   const cookieStore = cookies();
   const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
   const {
@@ -26,7 +26,6 @@ export async function POST(request: Request, { params }: RouteParams) {
     return NextResponse.json({ error: "Only teachers can send invites." }, { status: 403 });
   }
 
-  const classId = params.classId;
   const { data: classRow, error: classError } = await supabase
     .from("classes")
     .select("id, name")
