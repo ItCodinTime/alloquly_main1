@@ -1,19 +1,32 @@
 "use client";
 
 import { createClient } from "@/lib/supabase-client";
-import { useEffect, useState } from "react";
+import { Suspense, useState } from "react";
+import { useSearchParams } from "next/navigation";
 
 export default function LoginPage() {
-  const [redirectTo, setRedirectTo] = useState("/assignments");
+  return (
+    <Suspense
+      fallback={
+        <main className="flex min-h-screen items-center justify-center bg-slate-950 text-white">
+          Loading secure login…
+        </main>
+      }
+    >
+      <LoginFormWithParams />
+    </Suspense>
+  );
+}
+
+function LoginFormWithParams() {
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirectTo") || "/assignments";
+  return <LoginForm redirectTo={redirectTo} />;
+}
+
+function LoginForm({ redirectTo }: { redirectTo: string }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const url = new URL(window.location.href);
-    const next = url.searchParams.get("redirectTo");
-    if (next) setRedirectTo(next);
-  }, []);
 
   async function handleGoogleLogin() {
     setLoading(true);
@@ -21,10 +34,12 @@ export default function LoginPage() {
     
     try {
       const supabase = createClient();
+      const origin = window.location.origin;
+      const callbackUrl = `${origin}/auth/callback?redirectTo=${encodeURIComponent(redirectTo)}`;
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/auth/callback?redirectTo=${encodeURIComponent(redirectTo)}`,
+          redirectTo: callbackUrl,
           queryParams: {
             access_type: "offline",
             prompt: "consent",
@@ -38,8 +53,9 @@ export default function LoginPage() {
         window.location.assign(data.url);
         return;
       }
-      throw new Error("Unable to start Google OAuth.");
+      throw new Error("OAuth provider did not return a redirect URL.");
     } catch (err) {
+      console.error("Google login error", err);
       setError((err as Error).message);
       setLoading(false);
     }
