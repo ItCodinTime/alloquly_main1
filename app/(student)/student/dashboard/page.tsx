@@ -8,6 +8,9 @@ import StudentAssignmentList from "@/components/student/assignment-list";
 import StudentProgressChart from "@/components/student/progress-chart";
 import PrivacyControls from "@/components/privacy-controls";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 type ClassSummary = {
   id: string;
   name: string;

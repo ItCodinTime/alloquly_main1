@@ -5,6 +5,9 @@ import { TeacherFooter } from "@/components/dashboard/TeacherFooter";
 import CreateClassForm from "@/components/teacher/create-class-form";
 import TeacherClassCard from "@/components/teacher/class-card";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 type ClassData = {
   id: string;
   name: string;

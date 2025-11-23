@@ -6,6 +6,9 @@ import { TeacherFooter } from "@/components/dashboard/TeacherFooter";
 import PendingSubmissionList from "@/components/teacher/pending-submissions";
 import PrivacyControls from "@/components/privacy-controls";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 type TeacherClass = {
   id: string;
   name: string;

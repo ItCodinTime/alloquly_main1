@@ -3,6 +3,9 @@ import AssignmentRemodeler from "@/components/assignment-remodeler";
 import InsightPanel from "@/components/insight-panel";
 import { createServerClient } from "@/lib/supabase-server";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export const metadata = {
   title: "Alloquy Assignments | AI Builder + Remodeler",
   description:
