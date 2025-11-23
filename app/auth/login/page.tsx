@@ -33,6 +33,7 @@ function LoginForm() {
         provider: "google",
         options: {
           redirectTo: `${window.location.origin}/auth/callback?redirectTo=${encodeURIComponent(redirectTo)}`,
+          skipBrowserRedirect: true,
           queryParams: {
             access_type: "offline",
             prompt: "consent",
@@ -43,9 +44,12 @@ function LoginForm() {
       if (error) throw error;
       if (data?.url) {
         window.location.href = data.url;
+        return;
       }
+      throw new Error("Unable to start Google sign-in. Please try again.");
     } catch (err) {
       setError((err as Error).message);
+    } finally {
       setLoading(false);
     }
   }
