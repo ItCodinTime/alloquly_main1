@@ -1,7 +1,7 @@
 "use client";
 
 import { createClient } from "@/lib/supabase-client";
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 export default function LoginPage() {
@@ -23,6 +23,15 @@ function LoginForm() {
   const redirectTo = searchParams.get("redirectTo") || "/assignments";
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const authError = searchParams.get("error");
+
+  useEffect(() => {
+    if (authError) {
+      setError(authError);
+      setLoading(false);
+    }
+  }, [authError]);
 
   async function handleGoogleLogin() {
     setLoading(true);

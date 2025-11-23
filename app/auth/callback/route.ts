@@ -9,8 +9,23 @@ export async function GET(request: NextRequest) {
   const redirectTo = requestUrl.searchParams.get("redirectTo") || "/assignments";
 
   if (code) {
-    const supabase = createRouteHandlerClient({ cookies });
-    await supabase.auth.exchangeCodeForSession(code);
+    try {
+      const supabase = createRouteHandlerClient({ cookies });
+      const { error } = await supabase.auth.exchangeCodeForSession(code);
+      if (error) {
+        console.error("Supabase auth exchange error:", error);
+        const loginUrl = new URL("/auth/login", requestUrl.origin);
+        loginUrl.searchParams.set("error", error.message || "Unable to complete sign in.");
+        if (redirectTo) loginUrl.searchParams.set("redirectTo", redirectTo);
+        return NextResponse.redirect(loginUrl);
+      }
+    } catch (error) {
+      console.error("Supabase auth exchange exception:", error);
+      const loginUrl = new URL("/auth/login", requestUrl.origin);
+      loginUrl.searchParams.set("error", "Unexpected error during sign in.");
+      if (redirectTo) loginUrl.searchParams.set("redirectTo", redirectTo);
+      return NextResponse.redirect(loginUrl);
+    }
   }
 
   return NextResponse.redirect(new URL(redirectTo, requestUrl.origin));
