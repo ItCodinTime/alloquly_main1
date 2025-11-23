@@ -39,7 +39,7 @@ export async function middleware(req: NextRequest) {
     const { data: profile } = await supabase
       .from("profiles")
       .select("role,is_onboarded")
-      .eq("user_id", session.user.id)
+      .eq("id", session.user.id)
       .maybeSingle();
 
     if ((!profile || !profile.is_onboarded) && !isOnboardingPath) {
