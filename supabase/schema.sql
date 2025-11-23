@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS students (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Classes owned by teachers.
+-- Classes owned by teachers (teacher_id matches profiles.id).
 CREATE TABLE IF NOT EXISTS classes (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   teacher_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
@@ -231,7 +231,7 @@ WITH CHECK (
   )
 );
 
--- Invitations: teachers only (students access via service-role when claiming).
+-- Invitations: teachers only.
 CREATE POLICY "Invites managed by teacher"
 ON class_invitations FOR ALL
 USING (
