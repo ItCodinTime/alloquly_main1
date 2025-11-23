@@ -2,26 +2,26 @@
 
 import { createClient } from "@/lib/supabase-client";
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
 
 export default function LoginPage() {
   return <LoginForm />;
 }
 
 function LoginForm() {
-  const searchParams = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo") || "/assignments";
+  const [redirectTo, setRedirectTo] = useState("/assignments");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const authError = searchParams.get("error");
-
   useEffect(() => {
-    if (authError) {
-      setError(authError);
+    const params = new URLSearchParams(window.location.search);
+    const redirectParam = params.get("redirectTo");
+    if (redirectParam) setRedirectTo(redirectParam);
+    const errorParam = params.get("error");
+    if (errorParam) {
+      setError(errorParam);
       setLoading(false);
     }
-  }, [authError]);
+  }, []);
 
   async function handleGoogleLogin() {
     setLoading(true);
@@ -95,9 +95,9 @@ function LoginForm() {
 
           {error && (
             <div className="mt-4 rounded-2xl border border-red-300/40 bg-red-300/10 p-4 text-sm text-red-200">
-              {error}
-            </div>
-          )}
+          {error}
+        </div>
+      )}
 
           <div className="mt-8 rounded-2xl border border-dashed border-white/20 p-4 text-xs text-zinc-400">
             <p className="font-semibold text-white">Secure by design</p>
