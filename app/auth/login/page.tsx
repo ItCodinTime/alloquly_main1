@@ -1,28 +1,35 @@
 "use client";
 
 import { createClient } from "@/lib/supabase-client";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 export default function LoginPage() {
   const [redirectTo, setRedirectTo] = useState("/assignments");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [loadingGoogle, setLoadingGoogle] = useState(false);
+  const [googleError, setGoogleError] = useState<string | null>(null);
+  const [email, setEmail] = useState("");
+  const [emailStatus, setEmailStatus] = useState<string | null>(null);
+  const [emailSubmitting, setEmailSubmitting] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const next = new URLSearchParams(window.location.search).get("redirectTo");
+    const params = new URLSearchParams(window.location.search);
+    const next = params.get("redirectTo");
     if (next) setRedirectTo(next);
   }, []);
 
+  const callbackUrl = useMemo(() => {
+    if (typeof window === "undefined") return "";
+    return `${window.location.origin}/auth/callback?redirectTo=${encodeURIComponent(redirectTo)}`;
+  }, [redirectTo]);
+
   async function handleGoogleLogin() {
-    setLoading(true);
-    setError(null);
+    setLoadingGoogle(true);
+    setGoogleError(null);
     
     try {
       const supabase = createClient();
-      const origin = window.location.origin;
-      const callbackUrl = `${origin}/auth/callback?redirectTo=${encodeURIComponent(redirectTo)}`;
-      const { data, error } = await supabase.auth.signInWithOAuth({
+      const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
           redirectTo: callbackUrl,
@@ -30,20 +37,40 @@ export default function LoginPage() {
             access_type: "offline",
             prompt: "consent",
           },
-          skipBrowserRedirect: true,
         },
       });
 
       if (error) throw error;
-      if (data?.url) {
-        window.location.assign(data.url);
-        return;
-      }
-      throw new Error("OAuth provider did not return a redirect URL.");
+      // Supabase will redirect the browser automatically.
     } catch (err) {
       console.error("Google login error", err);
-      setError((err as Error).message);
-      setLoading(false);
+      setGoogleError((err as Error).message);
+      setLoadingGoogle(false);
+    }
+  }
+
+  async function handleEmailLogin(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setEmailStatus(null);
+    if (!email.trim()) {
+      setEmailStatus("Enter a valid email address.");
+      return;
+    }
+    setEmailSubmitting(true);
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.signInWithOtp({
+        email: email.trim().toLowerCase(),
+        options: { emailRedirectTo: callbackUrl },
+      });
+      if (error) throw error;
+      setEmailStatus("Check your inbox for a secure login link.");
+      setEmail("");
+    } catch (err) {
+      console.error("Email login error", err);
+      setEmailStatus((err as Error).message);
+    } finally {
+      setEmailSubmitting(false);
     }
   }
 
@@ -72,8 +99,9 @@ export default function LoginPage() {
           </p>
 
           <button
+            type="button"
             onClick={handleGoogleLogin}
-            disabled={loading}
+            disabled={loadingGoogle}
             className="mt-8 flex w-full items-center justify-center gap-3 rounded-full border border-white bg-white px-6 py-4 text-sm font-semibold text-black transition hover:-translate-y-0.5 hover:shadow-[0_20px_60px_rgba(255,255,255,0.15)] disabled:cursor-not-allowed disabled:opacity-60"
           >
             <svg className="h-5 w-5" viewBox="0 0 24 24">
@@ -94,14 +122,35 @@ export default function LoginPage() {
                 d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
               />
             </svg>
-            {loading ? "Connecting..." : "Continue with Google"}
+            {loadingGoogle ? "Connecting…" : "Continue with Google"}
           </button>
 
-          {error && (
+          {googleError && (
             <div className="mt-4 rounded-2xl border border-red-300/40 bg-red-300/10 p-4 text-sm text-red-200">
-              {error}
+              {googleError}
             </div>
           )}
+
+          <div className="mt-8 border-t border-white/10 pt-6">
+            <p className="text-xs uppercase tracking-[0.4em] text-zinc-400">Email magic link</p>
+            <form className="mt-3 space-y-3" onSubmit={handleEmailLogin}>
+              <input
+                type="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                placeholder="you@school.org"
+                className="w-full rounded-2xl border border-white/20 bg-white/10 px-4 py-3 text-sm text-white placeholder:text-white/60 focus:border-white focus:outline-none"
+              />
+              <button
+                type="submit"
+                disabled={emailSubmitting}
+                className="w-full rounded-full border border-white/30 bg-transparent px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/10 disabled:opacity-60"
+              >
+                {emailSubmitting ? "Sending link…" : "Send me a login link"}
+              </button>
+            </form>
+            {emailStatus && <p className="mt-2 text-sm text-zinc-200">{emailStatus}</p>}
+          </div>
 
           <div className="mt-8 rounded-2xl border border-dashed border-white/20 p-4 text-xs text-zinc-400">
             <p className="font-semibold text-white">Secure by design</p>

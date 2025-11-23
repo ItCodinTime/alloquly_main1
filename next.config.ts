@@ -4,11 +4,11 @@ const csp = [
   "default-src 'self';",
   "script-src 'self';",
   "style-src 'self' 'unsafe-inline';",
-  "img-src 'self' data: https://*.supabase.co;",
+  "img-src 'self' data: https://*.supabase.co https://*.googleusercontent.com;",
   "font-src 'self' data:;",
-  "connect-src 'self' https://*.supabase.co https://api.openai.com;",
+  "connect-src 'self' https://*.supabase.co https://api.openai.com https://accounts.google.com https://*.google.com;",
   "base-uri 'self';",
-  "form-action 'self';",
+  "form-action 'self' https://*.supabase.co https://accounts.google.com https://*.google.com;",
   "frame-ancestors 'none';",
 ].join(" ");
 
