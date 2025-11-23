@@ -1,21 +1,11 @@
 "use client";
 
 import { createClient } from "@/lib/supabase-client";
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 export default function LoginPage() {
-  return (
-    <Suspense
-      fallback={
-        <main className="flex min-h-screen items-center justify-center bg-slate-950 text-white">
-          Loading…
-        </main>
-      }
-    >
-      <LoginForm />
-    </Suspense>
-  );
+  return <LoginForm />;
 }
 
 function LoginForm() {
