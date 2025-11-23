@@ -378,7 +378,7 @@ type DetailsStepProps = {
 };
 
 function DetailsStep({
-  role,
+  role, 
   schoolName,
   district,
   subjects,

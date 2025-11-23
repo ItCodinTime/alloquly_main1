@@ -1,6 +1,5 @@
 "use client";
 
-import { createClient } from "@/lib/supabase-client";
 import { useEffect, useState } from "react";
 
 export default function LoginPage() {
@@ -28,25 +27,21 @@ function LoginForm() {
     setError(null);
 
     try {
-      const supabase = createClient();
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback?redirectTo=${encodeURIComponent(redirectTo)}`,
-          skipBrowserRedirect: true,
-          queryParams: {
-            access_type: "offline",
-            prompt: "consent",
-          },
-        },
-      });
-
-      if (error) throw error;
-      if (data?.url) {
-        window.location.href = data.url;
-        return;
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+      if (!supabaseUrl) {
+        throw new Error("Supabase URL missing. Check NEXT_PUBLIC_SUPABASE_URL.");
       }
-      throw new Error("Unable to start Google sign-in. Please try again.");
+
+      const authUrl = new URL(`${supabaseUrl}/auth/v1/authorize`);
+      authUrl.searchParams.set("provider", "google");
+      authUrl.searchParams.set(
+        "redirect_to",
+        `${window.location.origin}/auth/callback?redirectTo=${encodeURIComponent(redirectTo)}`,
+      );
+      authUrl.searchParams.set("access_type", "offline");
+      authUrl.searchParams.set("prompt", "consent");
+
+      window.location.href = authUrl.toString();
     } catch (err) {
       setError((err as Error).message);
     } finally {
