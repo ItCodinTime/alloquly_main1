@@ -11,8 +11,7 @@ type RouteContext = {
 
 export async function POST(request: NextRequest, context: RouteContext) {
   const { classId } = await context.params;
-  const cookieStore = cookies();
-  const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+  const supabase = createRouteHandlerClient({ cookies });
   const {
     data: { session },
   } = await supabase.auth.getSession();

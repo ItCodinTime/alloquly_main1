@@ -9,8 +9,7 @@ type JoinRequest = {
 
 // Students join via code. Requires an authenticated session.
 export async function POST(request: Request) {
-  const cookieStore = cookies();
-  const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+  const supabase = createRouteHandlerClient({ cookies });
 
   const {
     data: { session },
