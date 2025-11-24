@@ -28,7 +28,9 @@ function LoginForm() {
     setError(null);
 
     try {
-      if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+      const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+      if (!supabaseUrl || !supabaseAnonKey) {
         throw new Error("Supabase env vars missing. Check NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.");
       }
 
@@ -46,11 +48,18 @@ function LoginForm() {
       });
 
       if (error) throw error;
-      if (data?.url) {
-        window.location.assign(data.url);
-        return;
-      }
-      setError("No redirect URL returned from Supabase.");
+      const fallbackUrl = new URL(`${supabaseUrl}/auth/v1/authorize`);
+      fallbackUrl.searchParams.set("provider", "google");
+      fallbackUrl.searchParams.set(
+        "redirect_to",
+        `${window.location.origin}/auth/callback?redirectTo=${encodeURIComponent(redirectTo)}`,
+      );
+      fallbackUrl.searchParams.set("access_type", "offline");
+      fallbackUrl.searchParams.set("prompt", "consent");
+
+      const destination = data?.url ?? fallbackUrl.toString();
+      console.info("Redirecting to Google OAuth via Supabase:", destination);
+      window.location.assign(destination);
     } catch (err) {
       const message = (err as Error).message ?? "Unable to start Google sign-in.";
       console.error("Google login error", err);
