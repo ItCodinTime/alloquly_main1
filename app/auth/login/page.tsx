@@ -29,8 +29,7 @@ function LoginForm() {
 
     try {
       if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-        setError("Supabase env vars missing. Check NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.");
-        return;
+        throw new Error("Supabase env vars missing. Check NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.");
       }
 
       const supabase = createClient();
@@ -56,8 +55,9 @@ function LoginForm() {
       const message = (err as Error).message ?? "Unable to start Google sign-in.";
       console.error("Google login error", err);
       setError(message);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   return (
