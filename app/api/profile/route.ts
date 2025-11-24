@@ -21,7 +21,7 @@ type ProfilePayload = {
 };
 
 export async function GET() {
-  const supabase = createRouteHandlerClient({ cookies });
+  const supabase = createRouteHandlerClient({ cookies: () => cookies() });
 
   const {
     data: { session },
@@ -42,7 +42,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const supabase = createRouteHandlerClient({ cookies });
+  const supabase = createRouteHandlerClient({ cookies: () => cookies() });
 
   const {
     data: { session },

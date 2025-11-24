@@ -97,7 +97,7 @@ type AIGradeResult = {
 
 async function persistGrade(submissionId: string, grade: AIGradeResult) {
   try {
-    const supabase = createRouteHandlerClient({ cookies });
+    const supabase = createRouteHandlerClient({ cookies: () => cookies() });
     const payload = {
       graded: true,
       score: grade.score ?? null,
