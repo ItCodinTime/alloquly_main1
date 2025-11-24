@@ -10,7 +10,22 @@ export async function GET(request: NextRequest) {
 
   if (code) {
     try {
-      const supabase = createRouteHandlerClient({ cookies: () => cookies() });
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+      const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+      if (!supabaseUrl || !supabaseAnonKey) {
+        console.error("Supabase env missing in callback", { supabaseUrl: Boolean(supabaseUrl), supabaseAnonKey: Boolean(supabaseAnonKey) });
+        const loginUrl = new URL("/auth/login", requestUrl.origin);
+        loginUrl.searchParams.set("error", "Supabase credentials missing on server.");
+        if (redirectTo) loginUrl.searchParams.set("redirectTo", redirectTo);
+        return NextResponse.redirect(loginUrl);
+      }
+
+      const supabase = createRouteHandlerClient({
+        cookies: () => cookies(),
+        supabaseUrl,
+        supabaseKey: supabaseAnonKey,
+      });
       const { error } = await supabase.auth.exchangeCodeForSession(code);
       if (error) {
         console.error("Supabase auth exchange error:", error);
