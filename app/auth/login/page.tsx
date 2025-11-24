@@ -1,5 +1,6 @@
 "use client";
 
+import { createClient } from "@/lib/supabase-client";
 import { useEffect, useState } from "react";
 
 export default function LoginPage() {
@@ -27,30 +28,36 @@ function LoginForm() {
     setError(null);
 
     try {
-      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-      if (!supabaseUrl) {
-        setError("Supabase URL missing. Check NEXT_PUBLIC_SUPABASE_URL.");
-        setLoading(false);
+      if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+        setError("Supabase env vars missing. Check NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.");
         return;
       }
 
-      const authUrl = new URL(`${supabaseUrl}/auth/v1/authorize`);
-      authUrl.searchParams.set("provider", "google");
-      authUrl.searchParams.set(
-        "redirect_to",
-        `${window.location.origin}/auth/callback?redirectTo=${encodeURIComponent(redirectTo)}`,
-      );
-      authUrl.searchParams.set("access_type", "offline");
-      authUrl.searchParams.set("prompt", "consent");
+      const supabase = createClient();
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback?redirectTo=${encodeURIComponent(redirectTo)}`,
+          queryParams: {
+            access_type: "offline",
+            prompt: "consent",
+          },
+          skipBrowserRedirect: true,
+        },
+      });
 
-      const destination = authUrl.toString();
-      console.info("Redirecting to Google OAuth via Supabase:", destination);
-      window.location.assign(destination);
+      if (error) throw error;
+      if (data?.url) {
+        window.location.assign(data.url);
+        return;
+      }
+      setError("No redirect URL returned from Supabase.");
     } catch (err) {
-      setError((err as Error).message);
-    } finally {
-      setLoading(false);
+      const message = (err as Error).message ?? "Unable to start Google sign-in.";
+      console.error("Google login error", err);
+      setError(message);
     }
+    setLoading(false);
   }
 
   return (
@@ -101,9 +108,9 @@ function LoginForm() {
 
           {error && (
             <div className="mt-4 rounded-2xl border border-red-300/40 bg-red-300/10 p-4 text-sm text-red-200">
-          {error}
-        </div>
-      )}
+              {error}
+            </div>
+          )}
 
           <div className="mt-8 rounded-2xl border border-dashed border-white/20 p-4 text-xs text-zinc-400">
             <p className="font-semibold text-white">Secure by design</p>
