@@ -29,7 +29,9 @@ function LoginForm() {
     try {
       const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
       if (!supabaseUrl) {
-        throw new Error("Supabase URL missing. Check NEXT_PUBLIC_SUPABASE_URL.");
+        setError("Supabase URL missing. Check NEXT_PUBLIC_SUPABASE_URL.");
+        setLoading(false);
+        return;
       }
 
       const authUrl = new URL(`${supabaseUrl}/auth/v1/authorize`);
@@ -41,7 +43,9 @@ function LoginForm() {
       authUrl.searchParams.set("access_type", "offline");
       authUrl.searchParams.set("prompt", "consent");
 
-      window.location.href = authUrl.toString();
+      const destination = authUrl.toString();
+      console.info("Redirecting to Google OAuth via Supabase:", destination);
+      window.location.assign(destination);
     } catch (err) {
       setError((err as Error).message);
     } finally {
