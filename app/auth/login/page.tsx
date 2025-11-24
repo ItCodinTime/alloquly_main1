@@ -48,18 +48,12 @@ function LoginForm() {
       });
 
       if (error) throw error;
-      const fallbackUrl = new URL(`${supabaseUrl}/auth/v1/authorize`);
-      fallbackUrl.searchParams.set("provider", "google");
-      fallbackUrl.searchParams.set(
-        "redirect_to",
-        `${window.location.origin}/auth/callback?redirectTo=${encodeURIComponent(redirectTo)}`,
-      );
-      fallbackUrl.searchParams.set("access_type", "offline");
-      fallbackUrl.searchParams.set("prompt", "consent");
+      if (!data?.url) {
+        throw new Error("No redirect URL returned from Supabase.");
+      }
 
-      const destination = data?.url ?? fallbackUrl.toString();
-      console.info("Redirecting to Google OAuth via Supabase:", destination);
-      window.location.assign(destination);
+      console.info("Redirecting to Google OAuth via Supabase:", data.url);
+      window.location.assign(data.url);
     } catch (err) {
       const message = (err as Error).message ?? "Unable to start Google sign-in.";
       console.error("Google login error", err);

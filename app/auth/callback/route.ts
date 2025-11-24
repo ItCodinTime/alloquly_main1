@@ -22,7 +22,9 @@ export async function GET(request: NextRequest) {
     } catch (error) {
       console.error("Supabase auth exchange exception:", error);
       const loginUrl = new URL("/auth/login", requestUrl.origin);
-      loginUrl.searchParams.set("error", "Unexpected error during sign in.");
+      const message =
+        error instanceof Error ? error.message : typeof error === "string" ? error : "Unexpected error during sign in.";
+      loginUrl.searchParams.set("error", message);
       if (redirectTo) loginUrl.searchParams.set("redirectTo", redirectTo);
       return NextResponse.redirect(loginUrl);
     }
