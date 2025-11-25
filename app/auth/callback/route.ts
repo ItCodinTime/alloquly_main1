@@ -3,6 +3,9 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
+// Force Node runtime so server env vars are available.
+export const runtime = "nodejs";
+
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");
@@ -14,7 +17,10 @@ export async function GET(request: NextRequest) {
       const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
       if (!supabaseUrl || !supabaseAnonKey) {
-        console.error("Supabase env missing in callback", { supabaseUrl: Boolean(supabaseUrl), supabaseAnonKey: Boolean(supabaseAnonKey) });
+        console.error("Supabase env missing in callback", {
+          supabaseUrl: Boolean(supabaseUrl),
+          supabaseAnonKey: Boolean(supabaseAnonKey),
+        });
         const loginUrl = new URL("/auth/login", requestUrl.origin);
         loginUrl.searchParams.set("error", "Supabase credentials missing on server.");
         if (redirectTo) loginUrl.searchParams.set("redirectTo", redirectTo);
