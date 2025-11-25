@@ -39,8 +39,9 @@ export async function GET(request: NextRequest) {
         supabaseAnonKeyPrefix: supabaseAnonKey.slice(0, 8),
       });
 
+      const cookieStore = cookies();
       const supabase = createRouteHandlerClient(
-        { cookies: () => request.cookies },
+        { cookies: () => cookieStore },
         { supabaseUrl, supabaseKey: supabaseAnonKey },
       );
       const { error } = await supabase.auth.exchangeCodeForSession(code);
