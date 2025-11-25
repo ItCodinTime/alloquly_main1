@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
       });
 
       const supabase = createRouteHandlerClient(
-        { cookies: () => cookies() },
+        { cookies },
         { supabaseUrl, supabaseKey: supabaseAnonKey },
       );
       const { error } = await supabase.auth.exchangeCodeForSession(code);
