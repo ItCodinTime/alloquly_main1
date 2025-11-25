@@ -198,9 +198,15 @@ function OnboardingWizard() {
           },
         }),
       });
-      const payload = await response.json();
+      let payload: { error?: string } | null = null;
+      try {
+        payload = await response.json();
+      } catch {
+        // Non-JSON or empty body; rely on status.
+        payload = null;
+      }
       if (!response.ok) {
-        throw new Error(payload.error ?? "Unable to save profile.");
+        throw new Error(payload?.error ?? "Unable to save profile.");
       }
       reroute(role);
     } catch (error) {
