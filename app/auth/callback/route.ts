@@ -13,8 +13,15 @@ export async function GET(request: NextRequest) {
 
   if (code) {
     try {
-      const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
-      const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+      // Fallback to public anon details if envs are missing at runtime (anon key is safe to expose).
+      const supabaseUrl =
+        process.env.SUPABASE_URL ||
+        process.env.NEXT_PUBLIC_SUPABASE_URL ||
+        "https://plbvcqtnfhfxalybtxjy.supabase.co";
+      const supabaseAnonKey =
+        process.env.SUPABASE_ANON_KEY ||
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsYnZjcXRuZmhmeGFseWJ0eGp5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM0MTk0MjksImV4cCI6MjA3ODk5NTQyOX0.82Z7gVf28CEBmrdO4vx5NsS76WDO0GuvQjsRYOazxDI";
 
       if (!supabaseUrl || !supabaseAnonKey) {
         console.error("Supabase env missing in callback", {
