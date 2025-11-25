@@ -28,17 +28,23 @@ function LoginForm() {
     setError(null);
 
     try {
-      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-      const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+      const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+      const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
       if (!supabaseUrl || !supabaseAnonKey) {
         throw new Error("Supabase env vars missing. Check NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.");
       }
+
+      const redirectBase =
+        process.env.NEXT_PUBLIC_SITE_URL && process.env.NEXT_PUBLIC_SITE_URL.startsWith("http")
+          ? process.env.NEXT_PUBLIC_SITE_URL
+          : window.location.origin;
+      const callbackUrl = `${redirectBase}/auth/callback?redirectTo=${encodeURIComponent(redirectTo)}`;
 
       const supabase = createClient();
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/auth/callback?redirectTo=${encodeURIComponent(redirectTo)}`,
+          redirectTo: callbackUrl,
           queryParams: {
             access_type: "offline",
             prompt: "consent",
