@@ -34,6 +34,11 @@ export async function GET(request: NextRequest) {
         return NextResponse.redirect(loginUrl);
       }
 
+      console.info("Callback env check", {
+        supabaseUrl,
+        supabaseAnonKeyPrefix: supabaseAnonKey.slice(0, 8),
+      });
+
       const supabase = createRouteHandlerClient(
         { cookies: () => cookies() },
         { supabaseUrl, supabaseKey: supabaseAnonKey },
