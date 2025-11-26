@@ -202,20 +202,27 @@ function OnboardingWizard() {
           },
         }),
       });
-      const raw = await response.text();
-      let payload: { error?: string } | null = null;
-      if (raw) {
-        try {
-          payload = JSON.parse(raw) as { error?: string };
-        } catch (err) {
-          console.error("Profile submit parse error", err);
-        }
+      if (response.ok) {
+        reroute(role);
+        return;
       }
 
-      if (!response.ok) {
-        throw new Error(payload?.error ?? "Unable to save profile.");
+      // Only attempt to read the body for error context; ignore parse failures.
+      try {
+        const text = await response.text();
+        if (text) {
+          try {
+            const payload = JSON.parse(text) as { error?: string };
+            throw new Error(payload.error ?? "Unable to save profile.");
+          } catch (err) {
+            console.error("Profile submit error parse failure", err);
+          }
+        }
+      } catch (err) {
+        console.error("Profile submit body read failure", err);
       }
-      reroute(role);
+
+      throw new Error("Unable to save profile.");
     } catch (error) {
       setMessage((error as Error).message);
     } finally {
