@@ -33,7 +33,7 @@ export async function GET() {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsYnZjcXRuZmhmeGFseWJ0eGp5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM0MTk0MjksImV4cCI6MjA3ODk5NTQyOX0.82Z7gVf28CEBmrdO4vx5NsS76WDO0GuvQjsRYOazxDI";
 
-    const supabase = createRouteHandlerClient({ cookies }, { supabaseUrl, supabaseKey: supabaseAnonKey });
+    const supabase = createRouteHandlerClient({ cookies: () => cookies() }, { supabaseUrl, supabaseKey: supabaseAnonKey });
 
     const {
       data: { session },
@@ -68,7 +68,7 @@ export async function POST(request: Request) {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsYnZjcXRuZmhmeGFseWJ0eGp5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM0MTk0MjksImV4cCI6MjA3ODk5NTQyOX0.82Z7gVf28CEBmrdO4vx5NsS76WDO0GuvQjsRYOazxDI";
 
-    const supabase = createRouteHandlerClient({ cookies }, { supabaseUrl, supabaseKey: supabaseAnonKey });
+    const supabase = createRouteHandlerClient({ cookies: () => cookies() }, { supabaseUrl, supabaseKey: supabaseAnonKey });
 
     const {
       data: { session },
