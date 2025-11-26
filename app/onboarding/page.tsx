@@ -202,16 +202,8 @@ function OnboardingWizard() {
           },
         }),
       });
-      const raw = await response.text();
-      let payload: { error?: string } | null = null;
-      if (raw) {
-        try {
-          payload = JSON.parse(raw) as { error?: string };
-        } catch (err) {
-          console.error("Profile submit parse error", err);
-        }
-      }
       if (!response.ok) {
+        const payload = await safeJson<{ error?: string }>(response);
         throw new Error(payload?.error ?? "Unable to save profile.");
       }
       reroute(role);
