@@ -39,11 +39,7 @@ export async function GET(request: NextRequest) {
         supabaseAnonKeyPrefix: supabaseAnonKey.slice(0, 8),
       });
 
-      const cookieStore = cookies();
-      const supabase = createRouteHandlerClient(
-        { cookies: () => cookieStore },
-        { supabaseUrl, supabaseKey: supabaseAnonKey },
-      );
+      const supabase = createRouteHandlerClient({ cookies }, { supabaseUrl, supabaseKey: supabaseAnonKey });
       const { error } = await supabase.auth.exchangeCodeForSession(code);
       if (error) {
         console.error("Supabase auth exchange error:", error);

@@ -33,10 +33,7 @@ export async function GET() {
       return NextResponse.json({ error: "Server missing Supabase credentials." }, { status: 500 });
     }
 
-    const supabase = createRouteHandlerClient(
-      { cookies: () => cookies() },
-      { supabaseUrl, supabaseKey: supabaseAnonKey },
-    );
+    const supabase = createRouteHandlerClient({ cookies }, { supabaseUrl, supabaseKey: supabaseAnonKey });
 
     const {
       data: { session },
@@ -73,10 +70,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Server missing Supabase credentials." }, { status: 500 });
     }
 
-    const supabase = createRouteHandlerClient(
-      { cookies: () => cookies() },
-      { supabaseUrl, supabaseKey: supabaseAnonKey },
-    );
+    const supabase = createRouteHandlerClient({ cookies }, { supabaseUrl, supabaseKey: supabaseAnonKey });
 
     const {
       data: { session },
