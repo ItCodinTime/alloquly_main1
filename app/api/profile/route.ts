@@ -33,11 +33,12 @@ function getSupabaseEnv() {
   return { supabaseUrl, supabaseAnonKey };
 }
 
-function getAuthToken(supabaseUrl: string) {
+async function getAuthToken(supabaseUrl: string) {
   try {
     const projectRef = new URL(supabaseUrl).hostname.split(".")[0];
     const cookieName = `sb-${projectRef}-auth-token`;
-    const raw = cookies().get(cookieName)?.value;
+    const cookieStore = await cookies();
+    const raw = cookieStore.get(cookieName)?.value;
     if (!raw) return null;
     const parsed = JSON.parse(raw);
     return Array.isArray(parsed) ? parsed[0] : null;
@@ -47,10 +48,10 @@ function getAuthToken(supabaseUrl: string) {
   }
 }
 
-function createSupabaseFromRequest() {
+async function createSupabaseFromRequest() {
   const env = getSupabaseEnv();
   if (!env) return { error: "Server missing Supabase credentials." } as const;
-  const authToken = getAuthToken(env.supabaseUrl);
+  const authToken = await getAuthToken(env.supabaseUrl);
   if (!authToken) return { error: "Not authenticated." } as const;
 
   const supabase = createClient(env.supabaseUrl, env.supabaseAnonKey, {
