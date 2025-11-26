@@ -74,7 +74,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Not authenticated." }, { status: 401 });
   }
 
-  const body = (await request.json()) as ProfilePayload;
+  let body: ProfilePayload;
+  try {
+    body = (await request.json()) as ProfilePayload;
+  } catch (err) {
+    console.error("Profile POST JSON parse error", err);
+    return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
+  }
 
   if (!body.role || (body.role !== "teacher" && body.role !== "student")) {
     return NextResponse.json({ error: "Select teacher or student." }, { status: 400 });
