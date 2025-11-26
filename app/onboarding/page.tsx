@@ -102,27 +102,23 @@ function OnboardingWizard() {
           router.push("/auth/login");
           return;
         }
-        if (!res.ok) {
-          setMessage("Unable to load your profile. Please refresh and try again.");
-          return;
-        }
-
         const payload = await safeJson<ProfileResponse>(res);
-        if (payload.profile?.is_onboarded) {
-          reroute(payload.profile.role);
-          return;
-        }
-        if (payload.profile) {
-          const profile = payload.profile;
-          setRole(profile.role);
-          setSchoolName(profile.school_name ?? "");
-          setDistrict(profile.district ?? "");
-          setSubjects(profile.subjects ?? []);
-          setGradesTaught(profile.grades_taught ?? []);
-          setGradeLevel(profile.grade_level ?? "");
-          setPreferredScale(profile.preferred_grading_scale ?? GRADING_SCALE_OPTIONS[0]);
-          setStudentAccommodations(profile.accommodations?.selections ?? []);
-          setAccommodationNotes(profile.accommodations?.notes ?? "");
+        if (res.ok && payload?.profile) {
+          if (payload.profile.is_onboarded) {
+            reroute(payload.profile.role);
+            return;
+          }
+          setRole(payload.profile.role);
+          setSchoolName(payload.profile.school_name ?? "");
+          setDistrict(payload.profile.district ?? "");
+          setSubjects(payload.profile.subjects ?? []);
+          setGradesTaught(payload.profile.grades_taught ?? []);
+          setGradeLevel(payload.profile.grade_level ?? "");
+          setPreferredScale(payload.profile.preferred_grading_scale ?? GRADING_SCALE_OPTIONS[0]);
+          setStudentAccommodations(payload.profile.accommodations?.selections ?? []);
+          setAccommodationNotes(payload.profile.accommodations?.notes ?? "");
+        } else {
+          setMessage("Unable to load your profile. Please refresh and try again.");
         }
       } catch (error) {
         console.error("Onboarding profile load error", error);
