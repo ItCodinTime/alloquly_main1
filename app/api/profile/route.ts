@@ -1,5 +1,4 @@
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import type { SupabaseClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
@@ -22,31 +21,65 @@ type ProfilePayload = {
   };
 };
 
+function getSupabaseEnv() {
+  const supabaseUrl =
+    process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "https://plbvcqtnfhfxalybtxjy.supabase.co";
+  const supabaseAnonKey =
+    process.env.SUPABASE_ANON_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsYnZjcXRuZmhmeGFseWJ0eGp5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM0MTk0MjksImV4cCI6MjA3ODk5NTQyOX0.82Z7gVf28CEBmrdO4vx5NsS76WDO0GuvQjsRYOazxDI";
+
+  if (!supabaseUrl || !supabaseAnonKey) return null;
+  return { supabaseUrl, supabaseAnonKey };
+}
+
+function getAuthToken(supabaseUrl: string) {
+  try {
+    const projectRef = new URL(supabaseUrl).hostname.split(".")[0];
+    const cookieName = `sb-${projectRef}-auth-token`;
+    const raw = cookies().get(cookieName)?.value;
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed[0] : null;
+  } catch (err) {
+    console.error("Auth cookie parse error", err);
+    return null;
+  }
+}
+
+function createSupabaseFromRequest() {
+  const env = getSupabaseEnv();
+  if (!env) return { error: "Server missing Supabase credentials." } as const;
+  const authToken = getAuthToken(env.supabaseUrl);
+  if (!authToken) return { error: "Not authenticated." } as const;
+
+  const supabase = createClient(env.supabaseUrl, env.supabaseAnonKey, {
+    global: {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    },
+  });
+
+  return { supabase, authToken } as const;
+}
+
 export async function GET() {
   try {
-    const supabaseUrl =
-      process.env.SUPABASE_URL ||
-      process.env.NEXT_PUBLIC_SUPABASE_URL ||
-      "https://plbvcqtnfhfxalybtxjy.supabase.co";
-    const supabaseAnonKey =
-      process.env.SUPABASE_ANON_KEY ||
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsYnZjcXRuZmhmeGFseWJ0eGp5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM0MTk0MjksImV4cCI6MjA3ODk5NTQyOX0.82Z7gVf28CEBmrdO4vx5NsS76WDO0GuvQjsRYOazxDI";
+    const { supabase, error } = createSupabaseFromRequest();
+    if (error || !supabase) {
+      return NextResponse.json({ error }, { status: error === "Server missing Supabase credentials." ? 500 : 401 });
+    }
 
-    const supabase = createRouteHandlerClient({ cookies: () => cookies() }, { supabaseUrl, supabaseKey: supabaseAnonKey });
-
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-
-    if (!session) {
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+    if (userError || !userData?.user?.id) {
       return NextResponse.json({ error: "Not authenticated." }, { status: 401 });
     }
 
-    const { data, error } = await supabase.from("profiles").select("*").eq("id", session.user.id).maybeSingle();
+    const { data, error: profileError } = await supabase.from("profiles").select("*").eq("id", userData.user.id).maybeSingle();
 
-    if (error) {
-      console.error("Profile read error:", error);
+    if (profileError) {
+      console.error("Profile read error:", profileError);
       return NextResponse.json({ error: "Unable to load profile." }, { status: 500 });
     }
 
@@ -59,22 +92,13 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const supabaseUrl =
-      process.env.SUPABASE_URL ||
-      process.env.NEXT_PUBLIC_SUPABASE_URL ||
-      "https://plbvcqtnfhfxalybtxjy.supabase.co";
-    const supabaseAnonKey =
-      process.env.SUPABASE_ANON_KEY ||
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsYnZjcXRuZmhmeGFseWJ0eGp5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM0MTk0MjksImV4cCI6MjA3ODk5NTQyOX0.82Z7gVf28CEBmrdO4vx5NsS76WDO0GuvQjsRYOazxDI";
+    const { supabase, error } = createSupabaseFromRequest();
+    if (error || !supabase) {
+      return NextResponse.json({ error }, { status: error === "Server missing Supabase credentials." ? 500 : 401 });
+    }
 
-    const supabase = createRouteHandlerClient({ cookies: () => cookies() }, { supabaseUrl, supabaseKey: supabaseAnonKey });
-
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-
-    if (!session) {
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+    if (userError || !userData?.user?.id) {
       return NextResponse.json({ error: "Not authenticated." }, { status: 401 });
     }
 
@@ -107,7 +131,7 @@ export async function POST(request: Request) {
     }
 
     const insertPayload = {
-      id: session.user.id,
+      id: userData.user.id,
       role: body.role,
       school_name: body.schoolName.trim(),
       district: body.role === "teacher" ? body.district?.trim() ?? null : null,
@@ -122,20 +146,20 @@ export async function POST(request: Request) {
       is_onboarded: true,
     };
 
-    const { data, error } = await supabase
+    const { data, error: upsertError } = await supabase
       .from("profiles")
       .upsert(insertPayload, { onConflict: "id" })
       .select("*")
       .single();
 
-    if (error) {
-      console.error("Profile upsert error:", error);
+    if (upsertError) {
+      console.error("Profile upsert error:", upsertError);
       return NextResponse.json({ error: "Unable to save profile." }, { status: 500 });
     }
 
     if (data.role === "student") {
       try {
-        await ensureStudentRecord(supabase, session.user.id, session.user.email ?? "", data.school_name);
+        await ensureStudentRecord(supabase, userData.user.id, userData.user.email ?? "", data.school_name);
       } catch (err) {
         console.error("Student onboarding error", err);
         return NextResponse.json({ error: "Unable to finalize student onboarding." }, { status: 500 });
