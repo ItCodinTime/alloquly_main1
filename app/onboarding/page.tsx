@@ -202,11 +202,10 @@ function OnboardingWizard() {
           },
         }),
       });
-      const payload = await safeJson<{ error?: string }>(response);
       if (!response.ok) {
+        const payload = await safeJson<{ error?: string }>(response);
         throw new Error(payload?.error ?? "Unable to save profile.");
       }
-      // If server returned no body (e.g., 204), just proceed.
       reroute(role);
     } catch (error) {
       setMessage((error as Error).message);
