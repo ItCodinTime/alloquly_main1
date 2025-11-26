@@ -21,7 +21,18 @@ type ProfilePayload = {
 };
 
 export async function GET() {
-  const supabase = createRouteHandlerClient({ cookies: () => cookies() });
+  const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.error("Supabase env missing in profile GET", { supabaseUrl: Boolean(supabaseUrl), supabaseAnonKey: Boolean(supabaseAnonKey) });
+    return NextResponse.json({ error: "Server missing Supabase credentials." }, { status: 500 });
+  }
+
+  const supabase = createRouteHandlerClient(
+    { cookies: () => cookies() },
+    { supabaseUrl, supabaseKey: supabaseAnonKey },
+  );
 
   const {
     data: { session },
@@ -42,7 +53,18 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const supabase = createRouteHandlerClient({ cookies: () => cookies() });
+  const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.error("Supabase env missing in profile POST", { supabaseUrl: Boolean(supabaseUrl), supabaseAnonKey: Boolean(supabaseAnonKey) });
+    return NextResponse.json({ error: "Server missing Supabase credentials." }, { status: 500 });
+  }
+
+  const supabase = createRouteHandlerClient(
+    { cookies: () => cookies() },
+    { supabaseUrl, supabaseKey: supabaseAnonKey },
+  );
 
   const {
     data: { session },
@@ -102,7 +124,12 @@ export async function POST(request: Request) {
   }
 
   if (data.role === "student") {
-    await ensureStudentRecord(supabase, session.user.id, session.user.email ?? "", data.school_name);
+    try {
+      await ensureStudentRecord(supabase, session.user.id, session.user.email ?? "", data.school_name);
+    } catch (err) {
+      console.error("Student onboarding error", err);
+      return NextResponse.json({ error: "Unable to finalize student onboarding." }, { status: 500 });
+    }
   }
 
   return NextResponse.json({ profile: data });

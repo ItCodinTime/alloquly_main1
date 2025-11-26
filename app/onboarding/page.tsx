@@ -102,7 +102,14 @@ function OnboardingWizard() {
           router.push("/auth/login");
           return;
         }
-        const payload = (await res.json()) as ProfileResponse;
+        let payload: ProfileResponse = {};
+        try {
+          payload = (await res.json()) as ProfileResponse;
+        } catch (err) {
+          console.error("Onboarding profile load JSON error", err);
+          setMessage("Unable to load your profile. Please refresh and try again.");
+          return;
+        }
         if (payload.profile?.is_onboarded) {
           reroute(payload.profile.role);
           return;
