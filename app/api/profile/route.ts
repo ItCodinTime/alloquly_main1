@@ -24,16 +24,14 @@ type ProfilePayload = {
 
 export async function GET() {
   try {
-    const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-    if (!supabaseUrl || !supabaseAnonKey) {
-      console.error("Supabase env missing in profile GET", {
-        supabaseUrl: Boolean(supabaseUrl),
-        supabaseAnonKey: Boolean(supabaseAnonKey),
-      });
-      return NextResponse.json({ error: "Server missing Supabase credentials." }, { status: 500 });
-    }
+    const supabaseUrl =
+      process.env.SUPABASE_URL ||
+      process.env.NEXT_PUBLIC_SUPABASE_URL ||
+      "https://plbvcqtnfhfxalybtxjy.supabase.co";
+    const supabaseAnonKey =
+      process.env.SUPABASE_ANON_KEY ||
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsYnZjcXRuZmhmeGFseWJ0eGp5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM0MTk0MjksImV4cCI6MjA3ODk5NTQyOX0.82Z7gVf28CEBmrdO4vx5NsS76WDO0GuvQjsRYOazxDI";
 
     const supabase = createRouteHandlerClient({ cookies }, { supabaseUrl, supabaseKey: supabaseAnonKey });
 
@@ -61,16 +59,14 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-    if (!supabaseUrl || !supabaseAnonKey) {
-      console.error("Supabase env missing in profile POST", {
-        supabaseUrl: Boolean(supabaseUrl),
-        supabaseAnonKey: Boolean(supabaseAnonKey),
-      });
-      return NextResponse.json({ error: "Server missing Supabase credentials." }, { status: 500 });
-    }
+    const supabaseUrl =
+      process.env.SUPABASE_URL ||
+      process.env.NEXT_PUBLIC_SUPABASE_URL ||
+      "https://plbvcqtnfhfxalybtxjy.supabase.co";
+    const supabaseAnonKey =
+      process.env.SUPABASE_ANON_KEY ||
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsYnZjcXRuZmhmeGFseWJ0eGp5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM0MTk0MjksImV4cCI6MjA3ODk5NTQyOX0.82Z7gVf28CEBmrdO4vx5NsS76WDO0GuvQjsRYOazxDI";
 
     const supabase = createRouteHandlerClient({ cookies }, { supabaseUrl, supabaseKey: supabaseAnonKey });
 

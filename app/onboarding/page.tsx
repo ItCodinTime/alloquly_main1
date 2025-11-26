@@ -213,7 +213,7 @@ function OnboardingWizard() {
         if (text) {
           try {
             const payload = JSON.parse(text) as { error?: string };
-            throw new Error(payload.error ?? "Unable to save profile.");
+            throw new Error(payload.error ?? `Unable to save profile (status ${response.status}).`);
           } catch (err) {
             console.error("Profile submit error parse failure", err);
           }
@@ -222,7 +222,7 @@ function OnboardingWizard() {
         console.error("Profile submit body read failure", err);
       }
 
-      throw new Error("Unable to save profile.");
+      throw new Error(`Unable to save profile (status ${response.status}).`);
     } catch (error) {
       setMessage((error as Error).message);
     } finally {
