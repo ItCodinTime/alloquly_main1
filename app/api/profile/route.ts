@@ -4,6 +4,8 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabase-admin";
 
+export const runtime = "nodejs";
+
 type Role = "teacher" | "student";
 
 type ProfilePayload = {
