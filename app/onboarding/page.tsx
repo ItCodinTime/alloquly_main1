@@ -102,11 +102,8 @@ function OnboardingWizard() {
           router.push("/auth/login");
           return;
         }
-        let payload: ProfileResponse = {};
-        try {
-          payload = (await res.json()) as ProfileResponse;
-        } catch (err) {
-          console.error("Onboarding profile load JSON error", err);
+        const payload = await safeJson<ProfileResponse>(res);
+        if (!payload) {
           setMessage("Unable to load your profile. Please refresh and try again.");
           return;
         }
@@ -205,13 +202,7 @@ function OnboardingWizard() {
           },
         }),
       });
-      let payload: { error?: string } | null = null;
-      try {
-        payload = await response.json();
-      } catch {
-        // Non-JSON or empty body; rely on status.
-        payload = null;
-      }
+      const payload = await safeJson<{ error?: string }>(response);
       if (!response.ok) {
         throw new Error(payload?.error ?? "Unable to save profile.");
       }
@@ -307,6 +298,17 @@ function OnboardingWizard() {
       </div>
     </section>
   );
+}
+
+async function safeJson<T>(res: Response): Promise<T | null> {
+  try {
+    const text = await res.text();
+    if (!text) return null;
+    return JSON.parse(text) as T;
+  } catch (err) {
+    console.error("JSON parse error", err);
+    return null;
+  }
 }
 
 function StepIndicator({ current }: { current: Step }) {
