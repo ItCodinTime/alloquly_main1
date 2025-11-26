@@ -102,11 +102,12 @@ function OnboardingWizard() {
           router.push("/auth/login");
           return;
         }
-        const payload = await safeJson<ProfileResponse>(res);
-        if (!payload) {
+        if (!res.ok) {
           setMessage("Unable to load your profile. Please refresh and try again.");
           return;
         }
+
+        const payload = await safeJson<ProfileResponse>(res);
         if (payload.profile?.is_onboarded) {
           reroute(payload.profile.role);
           return;
