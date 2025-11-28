@@ -10,6 +10,12 @@ type Student = {
   status: "On track" | "Needs nudge" | "Waiting on upload" | "Deep focus";
 };
 
+type ClassSummary = {
+  id: string;
+  name: string;
+  section: string | null;
+};
+
 const createId = () =>
   typeof globalThis !== "undefined" && globalThis.crypto?.randomUUID
     ? globalThis.crypto.randomUUID()
@@ -63,6 +69,8 @@ export default function ClassroomManager() {
   const [joinCode, setJoinCode] = useState<string | null>(null);
   const [codeStatus, setCodeStatus] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [classes, setClasses] = useState<ClassSummary[]>([]);
+  const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
 
   const inviteLink = useMemo(() => {
     const token = createId().slice(0, 6);
@@ -73,15 +81,53 @@ export default function ClassroomManager() {
     async function loadStudents() {
       try {
         const response = await fetch("/api/students", { cache: "no-store" });
-        const payload = (await response.json()) as { students?: Student[] };
-        if (payload.students?.length) {
+        const payload = await parseJson<{
+          roster?: Array<{ student?: { id?: string; name?: string | null; email?: string | null } }>;
+          students?: Student[];
+        }>(response);
+
+        const mappedRoster =
+          payload?.roster
+            ?.map((row) => ({
+              id: row.student?.id ?? createId(),
+              name: row.student?.name ?? "Student",
+              email: row.student?.email ?? "student@classroom.edu",
+              profile: "Onboarded",
+              status: "On track" as Student["status"],
+            }))
+            .filter(Boolean) ?? [];
+
+        if (payload?.students?.length) {
           setStudents(payload.students as Student[]);
+        } else if (mappedRoster.length) {
+          setStudents(mappedRoster);
         }
       } catch (error) {
         console.error("Unable to load students", error);
       }
     }
+
+    async function loadClasses() {
+      try {
+        const response = await fetch("/api/classes", { cache: "no-store" });
+        const payload = await parseJson<{ classes?: ClassSummary[] }>(response);
+        if (payload?.classes?.length) {
+          const normalized =
+            payload.classes
+              .map((cls) => ({ id: cls.id, name: cls.name, section: cls.section ?? null }))
+              .filter((cls) => cls.id) ?? [];
+          setClasses(normalized);
+          if (!selectedClassId && normalized[0]) {
+            setSelectedClassId(normalized[0].id);
+          }
+        }
+      } catch (error) {
+        console.error("Unable to load classes", error);
+      }
+    }
+
     loadStudents();
+    loadClasses();
   }, []);
 
   async function handleAddStudent(event: React.FormEvent<HTMLFormElement>) {
@@ -157,15 +203,24 @@ export default function ClassroomManager() {
   }
 
   async function generateJoinCode() {
+    if (!selectedClassId) {
+      setCodeStatus("Create a class before generating a code.");
+      return;
+    }
+
     setCodeStatus("Generating code…");
     try {
-      const response = await fetch("/api/join-class", { method: "GET" });
-      const payload = (await response.json()) as { code?: string };
-      if (!response.ok || !payload.code) {
-        throw new Error("Unable to generate code.");
+      const response = await fetch(`/api/classes/${selectedClassId}/code`, { method: "POST" });
+      const payload = await parseJson<{ code?: string; expires_at?: string; error?: string }>(response);
+      if (!response.ok || !payload?.code) {
+        throw new Error(payload?.error ?? "Unable to generate code.");
       }
       setJoinCode(payload.code);
-      setCodeStatus("Share this code with students to join.");
+      setCodeStatus(
+        `Share this code with students to join.${
+          payload.expires_at ? ` Expires at ${new Date(payload.expires_at).toLocaleTimeString()}.` : ""
+        }`,
+      );
     } catch (error) {
       setCodeStatus((error as Error).message);
     }
@@ -274,12 +329,28 @@ export default function ClassroomManager() {
               Generate a Google Classroom-style code for quick onboarding.
             </p>
           </div>
-          <button
-            type="button"
-            onClick={generateJoinCode}
-            className="rounded-full border border-indigo-600 bg-indigo-600 px-4 py-2 text-xs font-semibold text-white transition hover:bg-indigo-500"
-          >
-            Generate code
+          <div className="flex flex-wrap items-center gap-2">
+            <select
+              value={selectedClassId ?? ""}
+              onChange={(event) => setSelectedClassId(event.target.value || null)}
+              className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 outline-none transition focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100"
+            >
+              <option value="" disabled>
+                Select class
+              </option>
+              {classes.map((cls) => (
+                <option key={cls.id} value={cls.id} className="text-slate-900">
+                  {cls.name}
+                  {cls.section ? ` • ${cls.section}` : ""}
+                </option>
+              ))}
+            </select>
+            <button
+              type="button"
+              onClick={generateJoinCode}
+              className="rounded-full border border-indigo-600 bg-indigo-600 px-4 py-2 text-xs font-semibold text-white transition hover:bg-indigo-500"
+            >
+              Generate code
           </button>
         </div>
         {joinCode && (
@@ -302,4 +373,15 @@ export default function ClassroomManager() {
       </div>
     </section>
   );
+}
+
+async function parseJson<T>(response: Response): Promise<T | null> {
+  try {
+    const text = await response.text();
+    if (!text) return null;
+    return JSON.parse(text) as T;
+  } catch (error) {
+    console.error("Response JSON parse error", error);
+    return null;
+  }
 }

@@ -67,7 +67,7 @@ async function createSupabaseFromRequest() {
 
 export async function GET() {
   try {
-    const { supabase, error } = createSupabaseFromRequest();
+    const { supabase, error } = await createSupabaseFromRequest();
     if (error || !supabase) {
       return NextResponse.json({ error }, { status: error === "Server missing Supabase credentials." ? 500 : 401 });
     }
@@ -93,7 +93,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const { supabase, error } = createSupabaseFromRequest();
+    const { supabase, error } = await createSupabaseFromRequest();
     if (error || !supabase) {
       return NextResponse.json({ error }, { status: error === "Server missing Supabase credentials." ? 500 : 401 });
     }
