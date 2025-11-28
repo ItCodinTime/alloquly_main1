@@ -353,6 +353,7 @@ export default function ClassroomManager() {
               Generate code
             </button>
           </div>
+        </div>
         {joinCode && (
           <div className="mt-3 flex flex-col gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
