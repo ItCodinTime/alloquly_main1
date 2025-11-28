@@ -351,8 +351,8 @@ export default function ClassroomManager() {
               className="rounded-full border border-indigo-600 bg-indigo-600 px-4 py-2 text-xs font-semibold text-white transition hover:bg-indigo-500"
             >
               Generate code
-          </button>
-        </div>
+            </button>
+          </div>
         {joinCode && (
           <div className="mt-3 flex flex-col gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
