@@ -5,6 +5,17 @@ import { usePathname } from "next/navigation";
 
 type ConfigResponse = { hasAIKey: boolean };
 
+async function safeJson<T>(response: Response): Promise<T | null> {
+  try {
+    const text = await response.text();
+    if (!text) return null;
+    return JSON.parse(text) as T;
+  } catch (error) {
+    console.error("Config response parse error", error);
+    return null;
+  }
+}
+
 export default function EnvStatus() {
   const [hasKey, setHasKey] = useState<boolean | null>(null);
   const pathname = usePathname();
@@ -14,8 +25,8 @@ export default function EnvStatus() {
     async function load() {
       try {
         const res = await fetch("/api/config", { cache: "no-store" });
-        const data = (await res.json()) as ConfigResponse;
-        setHasKey(Boolean(data.hasAIKey));
+        const data = await safeJson<ConfigResponse>(res);
+        setHasKey(Boolean(data?.hasAIKey));
       } catch (error) {
         setHasKey(false);
         console.error("Unable to read config status", error);
